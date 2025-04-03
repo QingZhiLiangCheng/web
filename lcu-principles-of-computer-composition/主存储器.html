@@ -1,0 +1,796 @@
+<!DOCTYPE html> <html><head>
+		<title>主存储器</title>
+		<base href="../">
+		<meta id="root-path" root-path="../">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
+		<meta charset="UTF-8">
+		<meta name="description" content="QingZhiLiangCheng - 主存储器">
+		<meta property="og:title" content="主存储器">
+		<meta property="og:description" content="QingZhiLiangCheng - 主存储器">
+		<meta property="og:type" content="website">
+		<meta property="og:url" content="https://qingzhiliangcheng.cn/lcu-principles-of-computer-composition/主存储器.html">
+		<meta property="og:image" content="https://qingzhiliangcheng.cn/lib/media/pasted-image-20241030160907.png">
+		<meta property="og:site_name" content="QingZhiLiangCheng">
+		<meta name="author" content="QingZhiLiangCheng"><script async="" id="webpage-script" src="lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script type="module" async="" id="graph-view-script" src="lib/scripts/graph-view.js"></script><script async="" id="graph-wasm-script" src="lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="tinycolor-script" src="lib/scripts/tinycolor.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="pixi-script" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="minisearch-script" src="https://cdn.jsdelivr.net/npm/minisearch@6.3.0/dist/umd/index.min.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="lib/media/favicon.png"><script async="" id="graph-data-script" src="lib/scripts/graph-data.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-horizontal-spacing:0.6em;--tree-vertical-spacing:0.6em;--sidebar-margin:12px}.sidebar{height:100%;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));font-size:14px;z-index:10;position:relative;overflow:hidden;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}.sidebar-left{left:0}.sidebar-right{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}body.floating-sidebars .sidebar{position:absolute}.sidebar-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .sidebar-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}.sidebar-left .sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}.sidebar-right .sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar:has(.sidebar-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:2em;width:var(--sidebar-width);top:var(--sidebar-margin);padding-inline:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}.sidebar-left .sidebar-topbar{left:0}.sidebar-right .sidebar-topbar{right:0}.topbar-content{overflow:hidden;overflow:clip;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:0!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}.sidebar-left .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}.sidebar-right .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.sidebar-section-header{margin:0 0 1em 0;text-transform:uppercase;letter-spacing:.06em;font-weight:600}body{transition:background-color var(--color-fade-speed) ease-in-out}.webpage-container{display:flex;flex-direction:row;height:100%;width:100%;align-items:stretch;justify-content:center}.document-container{opacity:1;flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0;transition:opacity .2s ease-in-out}.document-container>.markdown-preview-view{margin:var(--sidebar-margin);margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;background-color:var(--background-primary);transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}.document-container>.markdown-preview-view>.markdown-preview-sizer{padding-bottom:80vh!important;width:100%!important;max-width:var(--line-width)!important;flex-basis:var(--line-width)!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}.markdown-rendered img:not([width]),.view-content img:not([width]){max-width:100%;outline:0}.document-container>.view-content.embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}.document-container>.view-content.embed>*{max-width:100%;max-height:100%;object-fit:contain}:has(> :is(.math,table)){overflow-x:auto!important}.document-container>.view-content{overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){if("file:"!=location.protocol){let e=document.querySelectorAll("include");for(let t=0;t<e.length;t++){let o=e[t],l=o.getAttribute("src");try{const e=await fetch(l);if(!e.ok){console.log("Could not include file: "+l),o?.remove();continue}let t=await e.text(),n=document.createRange().createContextualFragment(t),i=Array.from(n.children);for(let e of i)e.classList.add("hide"),e.style.transition="opacity 0.5s ease-in-out",setTimeout((()=>{e.classList.remove("hide")}),10);o.before(n),o.remove(),console.log("Included file: "+l)}catch(e){o?.remove(),console.log("Could not include file: "+l,e);continue}}}else{if(document.querySelectorAll("include").length>0){var e=document.createElement("div");e.id="error",e.textContent="Web server exports must be hosted on an http / web server to be viewed correctly.",e.style.position="fixed",e.style.top="50%",e.style.left="50%",e.style.transform="translate(-50%, -50%)",e.style.fontSize="1.5em",e.style.fontWeight="bold",e.style.textAlign="center",document.body.appendChild(e),document.querySelector(".document-container")?.classList.remove("hide")}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script"))),l=0;!function e(){let n=o[l];l++,n&&"true"!=n.getAttribute("loaded")||l<o.length&&e(),l<o.length?n.addEventListener("load",e):t()}()}</script><link rel="stylesheet" href="lib/styles/obsidian.css"><link rel="preload" href="lib/styles/other-plugins.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/other-plugins.css"></noscript><link rel="stylesheet" href="lib/styles/theme.css"><link rel="preload" href="lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="lib/styles/supported-plugins.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/supported-plugins.css"></noscript><link rel="preload" href="lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/main-styles.css"></noscript><link rel="preload" href="lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/snippets.css"></noscript></head><body class="publish css-settings-manager theme-light show-inline-title show-ribbon mk-readable-line mk-folder-lines mk-spaces-enabled mk-inline-context-enabled mk-flow-minimal background-settings-workplace-theme-light-custom-option background-settings-workplace-theme-dark-in-the-sky background-image-settings-switch toggle-nonoverlapping-bg background-image-settings-markdown-page-custom notebook-liked-markdown-page-grid-notebook-2 background-image-settings-command-palette-switch background-image-settings-command-palette-same-as-workplace toggle-bg-panel-page panel-page-bg-theme-light-wall panel-page-bg-theme-dark-plant layout-style-options-default clutter-free-headings bt-default-unordered-list default-ol-list-marker list-no-border bt-connected-indent-hover bt-colorful-connected-indent-hover folder-icons remove-arrow bt-toggle-colorful-folder folder-style-change-options-colorful-border folder-colorful-six table-width-100 tag-default admonition-bg-color-same style-options-for-admonition-plugin style-options-for-buttons-plugin dataview-list-style-pacman memos-banner-gradient thino-frosted-style thino-background-default quiet-outline-optimize code-theme-custom code-line-number whole-code-wrap"><script defer="">let theme=localStorage.getItem("theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");"dark"==theme?(document.body.classList.add("theme-dark"),document.body.classList.remove("theme-light")):(document.body.classList.add("theme-light"),document.body.classList.remove("theme-dark")),window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="webpage-container workspace"><div class="sidebar-left sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><label class="theme-toggle-container" for="theme_toggle"><input class="theme-toggle-input" type="checkbox" id="theme_toggle"><div class="toggle-background"></div></label></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content"><div class="search-input-container"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div class="search-input-clear-button" aria-label="Clear search"></div></div><include src="lib/html/file-tree.html"></include></div><script defer="">let ls = document.querySelector(".sidebar-left"); ls.classList.add("is-collapsed"); if (window.innerWidth > 768) ls.classList.remove("is-collapsed"); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div><div class="document-container markdown-reading-view hide"><div class="markdown-preview-view markdown-rendered allow-fold-headings allow-fold-lists is-readable-line-width"><style id="MJX-CHTML-styles">mjx-c.mjx-c1D43E.TEX-I::before { padding: 0.683em 0.889em 0px 0px; content: "K"; }
+mjx-c.mjx-c1D44A.TEX-I::before { padding: 0.683em 1.048em 0.022em 0px; content: "W"; }
+mjx-c.mjx-c1D70F.TEX-I::before { padding: 0.431em 0.517em 0.013em 0px; content: "τ"; }
+mjx-c.mjx-c394::before { padding: 0.716em 0.833em 0px 0px; content: "Δ"; }
+mjx-c.mjx-c1D446.TEX-I::before { padding: 0.705em 0.645em 0.022em 0px; content: "S"; }
+mjx-c.mjx-c1D450.TEX-I::before { padding: 0.442em 0.433em 0.011em 0px; content: "c"; }
+mjx-c.mjx-c25::before { padding: 0.75em 0.833em 0.056em 0px; content: "%"; }
+mjx-c.mjx-cB7::before { padding: 0.31em 0.278em 0px 0px; content: "⋅"; }
+.mjx-stretched mjx-c.mjx-c2013::before { content: "–"; }
+mjx-stretchy-h.mjx-c2013 mjx-ext mjx-c::before { content: "–"; padding: 0.285em 0px 0px; }
+mjx-c.mjx-c24::before { padding: 0.75em 0.5em 0.056em 0px; content: "$"; }
+mjx-c.mjx-c1D45D.TEX-I::before { padding: 0.442em 0.503em 0.194em 0px; content: "p"; }
+mjx-c.mjx-c39::before { padding: 0.666em 0.5em 0.022em 0px; content: "9"; }
+mjx-stretchy-v.mjx-c7B mjx-beg mjx-c::before { content: "⎧"; padding: 0.899em 0.889em 0.01em 0px; }
+mjx-stretchy-v.mjx-c7B mjx-ext mjx-c::before { content: "⎪"; width: 0.889em; }
+mjx-stretchy-v.mjx-c7B mjx-end mjx-c::before { content: "⎩"; padding: 0.01em 0.889em 0.899em 0px; }
+mjx-stretchy-v.mjx-c7B mjx-mid mjx-c::before { content: "⎨"; padding: 1.16em 0.889em 0.66em 0px; }
+mjx-stretchy-v.mjx-c7B > mjx-mid { margin-top: -0.91em; margin-bottom: -0.91em; }
+mjx-stretchy-v.mjx-c7B > mjx-end { margin-top: -0.909em; }
+mjx-stretchy-v.mjx-c7B > mjx-ext { height: 50%; border-top-width: 0.879em; border-bottom-width: 0.879em; }
+mjx-c.mjx-c1D463.TEX-I::before { padding: 0.443em 0.485em 0.011em 0px; content: "v"; }
+mjx-c.mjx-c1D443.TEX-I::before { padding: 0.683em 0.751em 0px 0px; content: "P"; }
+mjx-c.mjx-c1D448.TEX-I::before { padding: 0.683em 0.767em 0.022em 0px; content: "U"; }
+mjx-c.mjx-c1D447.TEX-I::before { padding: 0.677em 0.704em 0px 0px; content: "T"; }
+mjx-c.mjx-c2032::before { padding: 0.56em 0.275em 0px 0px; content: "′"; }
+mjx-c.mjx-c22C5::before { padding: 0.31em 0.278em 0px 0px; content: "⋅"; }
+mjx-c.mjx-c20D7.TEX-V::before { padding: 0.714em 0.5em 0px 0px; content: "→"; }
+mjx-c.mjx-c1D435.TEX-I::before { padding: 0.683em 0.759em 0px 0px; content: "B"; }
+mjx-c.mjx-c1D458.TEX-I::before { padding: 0.694em 0.521em 0.011em 0px; content: "k"; }
+mjx-c.mjx-c1D439.TEX-I::before { padding: 0.68em 0.749em 0px 0px; content: "F"; }
+mjx-c.mjx-c3A::before { padding: 0.43em 0.278em 0px 0px; content: ":"; }
+mjx-c.mjx-c2033::before { padding: 0.56em 0.55em 0px 0px; content: "′′"; }
+mjx-c.mjx-cAC::before { padding: 0.356em 0.667em 0px 0px; content: "¬"; }
+mjx-c.mjx-c2227::before { padding: 0.598em 0.667em 0.022em 0px; content: "∧"; }
+mjx-c.mjx-c2228::before { padding: 0.598em 0.667em 0.022em 0px; content: "∨"; }
+mjx-c.mjx-c2295::before { padding: 0.583em 0.778em 0.083em 0px; content: "⊕"; }
+mjx-munderover { display: inline-block; text-align: left; }
+mjx-munderover:not([limits="false"]) { padding-top: 0.1em; }
+mjx-munderover:not([limits="false"]) > * { display: block; }
+mjx-msubsup { display: inline-block; text-align: left; }
+mjx-script { display: inline-block; padding-right: 0.05em; padding-left: 0.033em; }
+mjx-script > mjx-spacer { display: block; }
+mjx-mover { display: inline-block; text-align: left; }
+mjx-mover:not([limits="false"]) { padding-top: 0.1em; }
+mjx-mover:not([limits="false"]) > * { display: block; text-align: left; }
+mjx-c.mjx-c1D449.TEX-I::before { padding: 0.683em 0.769em 0.022em 0px; content: "V"; }
+mjx-c.mjx-c1D466.TEX-I::before { padding: 0.442em 0.49em 0.205em 0px; content: "y"; }
+mjx-c.mjx-c1D451.TEX-I::before { padding: 0.694em 0.52em 0.01em 0px; content: "d"; }
+mjx-c.mjx-c2211.TEX-S2::before { padding: 0.95em 1.444em 0.45em 0px; content: "∑"; }
+mjx-c.mjx-c35::before { padding: 0.666em 0.5em 0.022em 0px; content: "5"; }
+mjx-c.mjx-c1D440.TEX-I::before { padding: 0.683em 1.051em 0px 0px; content: "M"; }
+mjx-c.mjx-c1D438.TEX-I::before { padding: 0.68em 0.764em 0px 0px; content: "E"; }
+mjx-c.mjx-c3C::before { padding: 0.54em 0.778em 0.04em 0px; content: "<"; }
+mjx-c.mjx-c1D462.TEX-I::before { padding: 0.442em 0.572em 0.011em 0px; content: "u"; }
+mjx-c.mjx-c5E::before { padding: 0.694em 0.5em 0px 0px; content: "^"; }
+mjx-c.mjx-c7C::before { padding: 0.75em 0.278em 0.249em 0px; content: "|"; }
+mjx-c.mjx-c1D43C.TEX-I::before { padding: 0.683em 0.504em 0px 0px; content: "I"; }
+mjx-c.mjx-c1D445.TEX-I::before { padding: 0.683em 0.759em 0.021em 0px; content: "R"; }
+mjx-c.mjx-c26::before { padding: 0.716em 0.778em 0.022em 0px; content: "&"; }
+mjx-c.mjx-c1D457.TEX-I::before { padding: 0.661em 0.412em 0.204em 0px; content: "j"; }
+mjx-c.mjx-c2217::before { padding: 0.465em 0.5em 0px 0px; content: "∗"; }
+mjx-c.mjx-c1D434.TEX-I::before { padding: 0.716em 0.75em 0px 0px; content: "A"; }
+mjx-c.mjx-c1D436.TEX-I::before { padding: 0.705em 0.76em 0.022em 0px; content: "C"; }
+mjx-c.mjx-c1D45A.TEX-I::before { padding: 0.442em 0.878em 0.011em 0px; content: "m"; }
+mjx-mtable { display: inline-block; text-align: center; vertical-align: 0.25em; position: relative; box-sizing: border-box; border-spacing: 0px; border-collapse: collapse; }
+mjx-mstyle[size="s"] mjx-mtable { vertical-align: 0.354em; }
+mjx-labels { position: absolute; left: 0px; top: 0px; }
+mjx-table { display: inline-block; vertical-align: -0.5ex; box-sizing: border-box; }
+mjx-table > mjx-itable { vertical-align: middle; text-align: left; box-sizing: border-box; }
+mjx-labels > mjx-itable { position: absolute; top: 0px; }
+mjx-mtable[justify="left"] { text-align: left; }
+mjx-mtable[justify="right"] { text-align: right; }
+mjx-mtable[justify="left"][side="left"] { padding-right: 0px !important; }
+mjx-mtable[justify="left"][side="right"] { padding-left: 0px !important; }
+mjx-mtable[justify="right"][side="left"] { padding-right: 0px !important; }
+mjx-mtable[justify="right"][side="right"] { padding-left: 0px !important; }
+mjx-mtable[align] { vertical-align: baseline; }
+mjx-mtable[align="top"] > mjx-table { vertical-align: top; }
+mjx-mtable[align="bottom"] > mjx-table { vertical-align: bottom; }
+mjx-mtable[side="right"] mjx-labels { min-width: 100%; }
+mjx-mtr { display: table-row; text-align: left; }
+mjx-mtr[rowalign="top"] > mjx-mtd { vertical-align: top; }
+mjx-mtr[rowalign="center"] > mjx-mtd { vertical-align: middle; }
+mjx-mtr[rowalign="bottom"] > mjx-mtd { vertical-align: bottom; }
+mjx-mtr[rowalign="baseline"] > mjx-mtd { vertical-align: baseline; }
+mjx-mtr[rowalign="axis"] > mjx-mtd { vertical-align: 0.25em; }
+mjx-mtd { display: table-cell; text-align: center; padding: 0.215em 0.4em; }
+mjx-mtd:first-child { padding-left: 0px; }
+mjx-mtd:last-child { padding-right: 0px; }
+mjx-mtable > * > mjx-itable > :first-child > mjx-mtd { padding-top: 0px; }
+mjx-mtable > * > mjx-itable > :last-child > mjx-mtd { padding-bottom: 0px; }
+mjx-tstrut { display: inline-block; height: 1em; vertical-align: -0.25em; }
+mjx-labels[align="left"] > mjx-mtr > mjx-mtd { text-align: left; }
+mjx-labels[align="right"] > mjx-mtr > mjx-mtd { text-align: right; }
+mjx-mtd[extra] { padding: 0px; }
+mjx-mtd[rowalign="top"] { vertical-align: top; }
+mjx-mtd[rowalign="center"] { vertical-align: middle; }
+mjx-mtd[rowalign="bottom"] { vertical-align: bottom; }
+mjx-mtd[rowalign="baseline"] { vertical-align: baseline; }
+mjx-mtd[rowalign="axis"] { vertical-align: 0.25em; }
+mjx-c.mjx-c36::before { padding: 0.666em 0.5em 0.022em 0px; content: "6"; }
+mjx-c.mjx-c1D456.TEX-I::before { padding: 0.661em 0.345em 0.011em 0px; content: "i"; }
+mjx-c.mjx-c1D453.TEX-I::before { padding: 0.705em 0.55em 0.205em 0px; content: "f"; }
+mjx-c.mjx-c1D437.TEX-I::before { padding: 0.683em 0.828em 0px 0px; content: "D"; }
+mjx-c.mjx-c2F::before { padding: 0.75em 0.5em 0.25em 0px; content: "/"; }
+mjx-c.mjx-c2C::before { padding: 0.121em 0.278em 0.194em 0px; content: ","; }
+mjx-c.mjx-c1D45F.TEX-I::before { padding: 0.442em 0.451em 0.011em 0px; content: "r"; }
+mjx-c.mjx-c3E::before { padding: 0.54em 0.778em 0.04em 0px; content: ">"; }
+mjx-c.mjx-c1D464.TEX-I::before { padding: 0.443em 0.716em 0.011em 0px; content: "w"; }
+mjx-c.mjx-c1D461.TEX-I::before { padding: 0.626em 0.361em 0.011em 0px; content: "t"; }
+mjx-c.mjx-c210E.TEX-I::before { padding: 0.694em 0.576em 0.011em 0px; content: "h"; }
+mjx-c.mjx-c1D452.TEX-I::before { padding: 0.442em 0.466em 0.011em 0px; content: "e"; }
+mjx-c.mjx-c2248::before { padding: 0.483em 0.778em 0px 0px; content: "≈"; }
+mjx-c.mjx-c37::before { padding: 0.676em 0.5em 0.022em 0px; content: "7"; }
+mjx-c.mjx-c1D460.TEX-I::before { padding: 0.442em 0.469em 0.01em 0px; content: "s"; }
+mjx-c.mjx-c1D467.TEX-I::before { padding: 0.442em 0.465em 0.011em 0px; content: "z"; }
+mjx-c.mjx-c21::before { padding: 0.716em 0.278em 0px 0px; content: "!"; }
+mjx-c.mjx-c7B.TEX-S3::before { padding: 1.45em 0.75em 0.949em 0px; content: "{"; }
+mjx-c.mjx-c1D43F.TEX-I::before { padding: 0.683em 0.681em 0px 0px; content: "L"; }
+mjx-c.mjx-c2265::before { padding: 0.636em 0.778em 0.138em 0px; content: "≥"; }
+mjx-c.mjx-c2264::before { padding: 0.636em 0.778em 0.138em 0px; content: "≤"; }
+mjx-c.mjx-c30::before { padding: 0.666em 0.5em 0.022em 0px; content: "0"; }
+mjx-c.mjx-c1D44F.TEX-I::before { padding: 0.694em 0.429em 0.011em 0px; content: "b"; }
+mjx-c.mjx-c33::before { padding: 0.665em 0.5em 0.022em 0px; content: "3"; }
+mjx-c.mjx-c398::before { padding: 0.705em 0.778em 0.022em 0px; content: "Θ"; }
+mjx-c.mjx-c1D442.TEX-I::before { padding: 0.704em 0.763em 0.022em 0px; content: "O"; }
+mjx-c.mjx-c3A9::before { padding: 0.704em 0.722em 0px 0px; content: "Ω"; }
+mjx-msub { display: inline-block; text-align: left; }
+mjx-c.mjx-c1D459.TEX-I::before { padding: 0.694em 0.298em 0.011em 0px; content: "l"; }
+mjx-c.mjx-c1D45C.TEX-I::before { padding: 0.441em 0.485em 0.011em 0px; content: "o"; }
+mjx-c.mjx-c1D454.TEX-I::before { padding: 0.442em 0.477em 0.205em 0px; content: "g"; }
+mjx-c.mjx-c1D441.TEX-I::before { padding: 0.683em 0.888em 0px 0px; content: "N"; }
+mjx-container[jax="CHTML"] { line-height: 0; }
+mjx-container [space="1"] { margin-left: 0.111em; }
+mjx-container [space="2"] { margin-left: 0.167em; }
+mjx-container [space="3"] { margin-left: 0.222em; }
+mjx-container [space="4"] { margin-left: 0.278em; }
+mjx-container [space="5"] { margin-left: 0.333em; }
+mjx-container [rspace="1"] { margin-right: 0.111em; }
+mjx-container [rspace="2"] { margin-right: 0.167em; }
+mjx-container [rspace="3"] { margin-right: 0.222em; }
+mjx-container [rspace="4"] { margin-right: 0.278em; }
+mjx-container [rspace="5"] { margin-right: 0.333em; }
+mjx-container [size="s"] { font-size: 70.7%; }
+mjx-container [size="ss"] { font-size: 50%; }
+mjx-container [size="Tn"] { font-size: 60%; }
+mjx-container [size="sm"] { font-size: 85%; }
+mjx-container [size="lg"] { font-size: 120%; }
+mjx-container [size="Lg"] { font-size: 144%; }
+mjx-container [size="LG"] { font-size: 173%; }
+mjx-container [size="hg"] { font-size: 207%; }
+mjx-container [size="HG"] { font-size: 249%; }
+mjx-container [width="full"] { width: 100%; }
+mjx-box { display: inline-block; }
+mjx-block { display: block; }
+mjx-itable { display: inline-table; }
+mjx-row { display: table-row; }
+mjx-row > * { display: table-cell; }
+mjx-mtext { display: inline-block; }
+mjx-mstyle { display: inline-block; }
+mjx-merror { display: inline-block; color: red; background-color: yellow; }
+mjx-mphantom { visibility: hidden; }
+mjx-assistive-mml { top: 0px; left: 0px; clip: rect(1px, 1px, 1px, 1px); user-select: none; position: absolute !important; padding: 1px 0px 0px !important; border: 0px !important; display: block !important; width: auto !important; overflow: hidden !important; }
+mjx-assistive-mml[display="block"] { width: 100% !important; }
+mjx-math { display: inline-block; text-align: left; line-height: 0; text-indent: 0px; font-style: normal; font-weight: normal; font-size: 100%; letter-spacing: normal; border-collapse: collapse; overflow-wrap: normal; word-spacing: normal; white-space: nowrap; direction: ltr; padding: 1px 0px; }
+mjx-container[jax="CHTML"][display="true"] { display: block; text-align: center; margin: 1em 0px; }
+mjx-container[jax="CHTML"][display="true"][width="full"] { display: flex; }
+mjx-container[jax="CHTML"][display="true"] mjx-math { padding: 0px; }
+mjx-container[jax="CHTML"][justify="left"] { text-align: left; }
+mjx-container[jax="CHTML"][justify="right"] { text-align: right; }
+mjx-mi { display: inline-block; text-align: left; }
+mjx-c { display: inline-block; }
+mjx-utext { display: inline-block; padding: 0.75em 0px 0.2em; }
+mjx-mo { display: inline-block; text-align: left; }
+mjx-stretchy-h { display: inline-table; width: 100%; }
+mjx-stretchy-h > * { display: table-cell; width: 0px; }
+mjx-stretchy-h > * > mjx-c { display: inline-block; transform: scaleX(1); }
+mjx-stretchy-h > * > mjx-c::before { display: inline-block; width: initial; }
+mjx-stretchy-h > mjx-ext { overflow: clip visible; width: 100%; }
+mjx-stretchy-h > mjx-ext > mjx-c::before { transform: scaleX(500); }
+mjx-stretchy-h > mjx-ext > mjx-c { width: 0px; }
+mjx-stretchy-h > mjx-beg > mjx-c { margin-right: -0.1em; }
+mjx-stretchy-h > mjx-end > mjx-c { margin-left: -0.1em; }
+mjx-stretchy-v { display: inline-block; }
+mjx-stretchy-v > * { display: block; }
+mjx-stretchy-v > mjx-beg { height: 0px; }
+mjx-stretchy-v > mjx-end > mjx-c { display: block; }
+mjx-stretchy-v > * > mjx-c { transform: scaleY(1); transform-origin: left center; overflow: hidden; }
+mjx-stretchy-v > mjx-ext { display: block; height: 100%; box-sizing: border-box; border: 0px solid transparent; overflow: visible clip; }
+mjx-stretchy-v > mjx-ext > mjx-c::before { width: initial; box-sizing: border-box; }
+mjx-stretchy-v > mjx-ext > mjx-c { transform: scaleY(500) translateY(0.075em); overflow: visible; }
+mjx-mark { display: inline-block; height: 0px; }
+mjx-texatom { display: inline-block; text-align: left; }
+mjx-munder { display: inline-block; text-align: left; }
+mjx-over { text-align: left; }
+mjx-munder:not([limits="false"]) { display: inline-table; }
+mjx-munder > mjx-row { text-align: left; }
+mjx-under { padding-bottom: 0.1em; }
+mjx-mn { display: inline-block; text-align: left; }
+mjx-mfrac { display: inline-block; text-align: left; }
+mjx-frac { display: inline-block; vertical-align: 0.17em; padding: 0px 0.22em; }
+mjx-frac[type="d"] { vertical-align: 0.04em; }
+mjx-frac[delims] { padding: 0px 0.1em; }
+mjx-frac[atop] { padding: 0px 0.12em; }
+mjx-frac[atop][delims] { padding: 0px; }
+mjx-dtable { display: inline-table; width: 100%; }
+mjx-dtable > * { font-size: 2000%; }
+mjx-dbox { display: block; font-size: 5%; }
+mjx-num { display: block; text-align: center; }
+mjx-den { display: block; text-align: center; }
+mjx-mfrac[bevelled] > mjx-num { display: inline-block; }
+mjx-mfrac[bevelled] > mjx-den { display: inline-block; }
+mjx-den[align="right"], mjx-num[align="right"] { text-align: right; }
+mjx-den[align="left"], mjx-num[align="left"] { text-align: left; }
+mjx-nstrut { display: inline-block; height: 0.054em; width: 0px; vertical-align: -0.054em; }
+mjx-nstrut[type="d"] { height: 0.217em; vertical-align: -0.217em; }
+mjx-dstrut { display: inline-block; height: 0.505em; width: 0px; }
+mjx-dstrut[type="d"] { height: 0.726em; }
+mjx-line { display: block; box-sizing: border-box; min-height: 1px; height: 0.06em; border-top: 0.06em solid; margin: 0.06em -0.1em; overflow: hidden; }
+mjx-line[type="d"] { margin: 0.18em -0.1em; }
+mjx-mrow { display: inline-block; text-align: left; }
+mjx-msup { display: inline-block; text-align: left; }
+mjx-c::before { display: block; width: 0px; }
+.MJX-TEX { font-family: MJXZERO, MJXTEX; }
+.TEX-B { font-family: MJXZERO, MJXTEX-B; }
+.TEX-I { font-family: MJXZERO, MJXTEX-I; }
+.TEX-MI { font-family: MJXZERO, MJXTEX-MI; }
+.TEX-BI { font-family: MJXZERO, MJXTEX-BI; }
+.TEX-S1 { font-family: MJXZERO, MJXTEX-S1; }
+.TEX-S2 { font-family: MJXZERO, MJXTEX-S2; }
+.TEX-S3 { font-family: MJXZERO, MJXTEX-S3; }
+.TEX-S4 { font-family: MJXZERO, MJXTEX-S4; }
+.TEX-A { font-family: MJXZERO, MJXTEX-A; }
+.TEX-C { font-family: MJXZERO, MJXTEX-C; }
+.TEX-CB { font-family: MJXZERO, MJXTEX-CB; }
+.TEX-FR { font-family: MJXZERO, MJXTEX-FR; }
+.TEX-FRB { font-family: MJXZERO, MJXTEX-FRB; }
+.TEX-SS { font-family: MJXZERO, MJXTEX-SS; }
+.TEX-SSB { font-family: MJXZERO, MJXTEX-SSB; }
+.TEX-SSI { font-family: MJXZERO, MJXTEX-SSI; }
+.TEX-SC { font-family: MJXZERO, MJXTEX-SC; }
+.TEX-T { font-family: MJXZERO, MJXTEX-T; }
+.TEX-V { font-family: MJXZERO, MJXTEX-V; }
+.TEX-VB { font-family: MJXZERO, MJXTEX-VB; }
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c { font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A !important; }
+@font-face { font-family: MJXZERO; src: url("lib/fonts/mathjax_zero.woff") format("woff"); }
+@font-face { font-family: MJXTEX; src: url("lib/fonts/mathjax_main-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-B; src: url("lib/fonts/mathjax_main-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-I; src: url("lib/fonts/mathjax_math-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-MI; src: url("lib/fonts/mathjax_main-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-BI; src: url("lib/fonts/mathjax_math-bolditalic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S1; src: url("lib/fonts/mathjax_size1-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S2; src: url("lib/fonts/mathjax_size2-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S3; src: url("lib/fonts/mathjax_size3-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S4; src: url("lib/fonts/mathjax_size4-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-A; src: url("lib/fonts/mathjax_ams-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-C; src: url("lib/fonts/mathjax_calligraphic-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-CB; src: url("lib/fonts/mathjax_calligraphic-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-FR; src: url("lib/fonts/mathjax_fraktur-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-FRB; src: url("lib/fonts/mathjax_fraktur-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SS; src: url("lib/fonts/mathjax_sansserif-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SSB; src: url("lib/fonts/mathjax_sansserif-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SSI; src: url("lib/fonts/mathjax_sansserif-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SC; src: url("lib/fonts/mathjax_script-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-T; src: url("lib/fonts/mathjax_typewriter-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-V; src: url("lib/fonts/mathjax_vector-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-VB; src: url("lib/fonts/mathjax_vector-bold.woff") format("woff"); }
+mjx-c.mjx-c1D45B.TEX-I::before { padding: 0.442em 0.6em 0.011em 0px; content: "n"; }
+mjx-c.mjx-c2192::before { padding: 0.511em 1em 0.011em 0px; content: "→"; }
+mjx-c.mjx-c221E::before { padding: 0.442em 1em 0.011em 0px; content: "∞"; }
+mjx-c.mjx-c6C::before { padding: 0.694em 0.278em 0px 0px; content: "l"; }
+mjx-c.mjx-c69::before { padding: 0.669em 0.278em 0px 0px; content: "i"; }
+mjx-c.mjx-c6D::before { padding: 0.442em 0.833em 0px 0px; content: "m"; }
+mjx-c.mjx-c1D44E.TEX-I::before { padding: 0.441em 0.529em 0.01em 0px; content: "a"; }
+mjx-c.mjx-c2B::before { padding: 0.583em 0.778em 0.082em 0px; content: "+"; }
+mjx-c.mjx-c28::before { padding: 0.75em 0.389em 0.25em 0px; content: "("; }
+mjx-c.mjx-c31::before { padding: 0.666em 0.5em 0px 0px; content: "1"; }
+mjx-c.mjx-c29::before { padding: 0.75em 0.389em 0.25em 0px; content: ")"; }
+mjx-c.mjx-c2E::before { padding: 0.12em 0.278em 0px 0px; content: "."; }
+mjx-c.mjx-c3D::before { padding: 0.583em 0.778em 0.082em 0px; content: "="; }
+mjx-c.mjx-c5B::before { padding: 0.75em 0.278em 0.25em 0px; content: "["; }
+mjx-c.mjx-c5D::before { padding: 0.75em 0.278em 0.25em 0px; content: "]"; }
+mjx-c.mjx-cD7::before { padding: 0.491em 0.778em 0px 0px; content: "×"; }
+mjx-c.mjx-c32::before { padding: 0.666em 0.5em 0px 0px; content: "2"; }
+mjx-c.mjx-c34::before { padding: 0.677em 0.5em 0px 0px; content: "4"; }
+mjx-c.mjx-c38::before { padding: 0.666em 0.5em 0.022em 0px; content: "8"; }
+mjx-c.mjx-c2026::before { padding: 0.12em 1.172em 0px 0px; content: "…"; }
+mjx-c.mjx-c1D465.TEX-I::before { padding: 0.442em 0.572em 0.011em 0px; content: "x"; }
+mjx-c.mjx-c2212::before { padding: 0.583em 0.778em 0.082em 0px; content: "−"; }
+</style><pre class="frontmatter language-yaml" tabindex="0" style="display: none;"><code class="language-yaml is-loaded"><span class="token key atrule">dg-publish</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre><div class="markdown-preview-sizer markdown-preview-section"><h1 class="page-title heading inline-title" id="主存储器"><p dir="auto">主存储器</p></h1><div class="el-h3 heading-wrapper"><h3 data-heading="主存的基本组成" dir="auto" class="heading" id="主存的基本组成"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>主存的基本组成</h3><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030160907.png" src="Pasted image 20241030160907.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030160907.png" src="lib/media/pasted-image-20241030160907.png" style="width: 500px; max-width: 100%;"></span><br>
+在我们之前知道的存储体 MAR和MDR上有增加了 驱动器 译码器 控制电路 读写电路等<br>
+不过MDR和MAR在内存中</p></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="主存和CPU的联系" dir="auto" class="heading" id="主存和CPU的联系"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>主存和CPU的联系</h3><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030161029.png" src="Pasted image 20241030161029.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030161029.png" src="lib/media/pasted-image-20241030161029.png" style="width: 500px; max-width: 100%;"></span><br>
+主要就是读写的控制信号 和 数据总线和地址总线</p></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="主存中存储单元地址的分配" dir="auto" class="heading" id="主存中存储单元地址的分配"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>主存中存储单元地址的分配</h3><div class="heading-children"><div class="el-p"><p dir="auto"><font color="#4bacc6">12345678H 这八位二进制是如何在主存储器中储存的呢？</font><br>
+假设我们的机器的存储结构的存储字长是32位：<br>
+意味着我们对存储器读或者是写的话，一次性可以读出或者写入32位的01码<br>
+但是我们存储器的编址单位都是字节，这在CSAPP中都学过的<br>
+<span alt="Pasted image 20241030161716.png" src="Pasted image 20241030161716.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241030161716.png" src="lib/media/pasted-image-20241030161716.png" style="width: 300px; max-width: 100%;"></span><br>
+<span alt="Pasted image 20241030161739.png" src="Pasted image 20241030161739.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241030161739.png" src="lib/media/pasted-image-20241030161739.png" style="width: 300px; max-width: 100%;"></span><br>
+这里也提到了大端法和小端法的不同 这都是CSAPP中的内容</p></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="主存的技术指标" dir="auto" class="heading" id="主存的技术指标"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>主存的技术指标</h3><div class="heading-children"><div class="el-ol"><ol>
+<li data-line="0" dir="auto">存储容量</li>
+<li data-line="1" dir="auto"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储速度
+<ol>
+<li data-line="2" dir="auto"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储时间<br>
+存储器的访问时间：就是说存储器得到地址一直到稳定的输入或者输出
+<ul>
+<li data-line="4" dir="auto">读出时间：给出地址信号 一直到 数据线上得到稳定的输出</li>
+<li data-line="5" dir="auto">写入时间：给出地址信号一直到写入给定的存储单元中</li>
+</ul>
+</li>
+<li data-line="6" dir="auto">存储周期<br>
+连续的完成两次独立的存储器操作所需要的最小时间间隔</li>
+<li data-line="8" dir="auto">存储器的带宽<br>
+单位时间内存储器存取的信息量</li>
+</ol>
+</li>
+</ol></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="半导体存储芯片的基本结构" dir="auto" class="heading" id="半导体存储芯片的基本结构"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>半导体存储芯片的基本结构</h3><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030163035.png" src="Pasted image 20241030163035.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030163035.png" src="lib/media/pasted-image-20241030163035.png" style="width: 500px; max-width: 100%;"></span><br>
+地址线都是单向的  由CPU指向存储设备或者IO设备<br>
+数据线是双向的</p></div><div class="el-p"><p dir="auto">通过地址线和数据线算芯片容量：<br>
+假如说地址线由n根，是说共有<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msup><mjx-mn class="mjx-n"><mjx-c class="mjx-c32"></mjx-c></mjx-mn><mjx-script style="vertical-align: 0.363em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msup></mjx-math></mjx-container></span>个地址，也就是<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msup><mjx-mn class="mjx-n"><mjx-c class="mjx-c32"></mjx-c></mjx-mn><mjx-script style="vertical-align: 0.363em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msup></mjx-math></mjx-container></span>个存储单元<br>
+数据线为m根，是说一个存储单元可以存m位<br>
+所以公式为<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D45A TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-cD7"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="3"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi></mjx-math></mjx-container></span></p></div><div class="el-p"><p dir="auto">片选线就是芯片选择线</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030164412.png" src="Pasted image 20241030164412.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241030164412.png" src="lib/media/pasted-image-20241030164412.png"></span></p></div><div class="el-p"><p dir="auto">内存条上有好多芯片  片选线就是指定往哪个芯片上存或者往哪几个芯片上存的<br>
+半导体存储芯片的片选线一般有两种标识<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mover><mjx-over style="padding-bottom: 0.18em; margin-bottom: -0.248em;"><mjx-mo class="mjx-n"><mjx-stretchy-h class="mjx-c2013" style="width: 1.405em;"><mjx-ext><mjx-c></mjx-c></mjx-ext></mjx-stretchy-h></mjx-mo></mjx-over><mjx-base><mjx-mrow><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D436 TEX-I"></mjx-c></mjx-mi><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D446 TEX-I"></mjx-c></mjx-mi></mjx-mrow></mjx-base></mjx-mover></mjx-math></mjx-container></span> <span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mover><mjx-over style="padding-bottom: 0.18em; margin-bottom: -0.248em;"><mjx-mo class="mjx-n"><mjx-stretchy-h class="mjx-c2013" style="width: 1.524em;"><mjx-ext><mjx-c></mjx-c></mjx-ext></mjx-stretchy-h></mjx-mo></mjx-over><mjx-base><mjx-mrow><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D436 TEX-I"></mjx-c></mjx-mi><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D438 TEX-I"></mjx-c></mjx-mi></mjx-mrow></mjx-base></mjx-mover></mjx-math></mjx-container></span><br>
+上面的横线的意思是低电平有信号<br>
+CS（chip select）芯片选择的缩写<br>
+CE（chip enable）芯片使能的缩写<br>
+读写操作可以用一根线标识或者两根线标识</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">一根线的时候  <span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mover><mjx-over style="padding-bottom: 0.18em; margin-bottom: -0.248em;"><mjx-mo class="mjx-n"><mjx-stretchy-h class="mjx-c2013" style="width: 1.812em;"><mjx-ext><mjx-c></mjx-c></mjx-ext></mjx-stretchy-h></mjx-mo></mjx-over><mjx-base><mjx-mrow><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D44A TEX-I"></mjx-c></mjx-mi><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D438 TEX-I"></mjx-c></mjx-mi></mjx-mrow></mjx-base></mjx-mover></mjx-math></mjx-container></span>  低电平写 高电平读</li>
+<li data-line="1" dir="auto">两根线的时候 <span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mover><mjx-over style="padding-bottom: 0.18em; margin-bottom: -0.248em;"><mjx-mo class="mjx-n"><mjx-stretchy-h class="mjx-c2013" style="width: 1.527em;"><mjx-ext><mjx-c></mjx-c></mjx-ext></mjx-stretchy-h></mjx-mo></mjx-over><mjx-base><mjx-mrow><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D442 TEX-I"></mjx-c></mjx-mi><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D438 TEX-I"></mjx-c></mjx-mi></mjx-mrow></mjx-base></mjx-mover></mjx-math></mjx-container></span> <span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mover><mjx-over style="padding-bottom: 0.18em; margin-bottom: -0.248em;"><mjx-mo class="mjx-n"><mjx-stretchy-h class="mjx-c2013" style="width: 1.812em;"><mjx-ext><mjx-c></mjx-c></mjx-ext></mjx-stretchy-h></mjx-mo></mjx-over><mjx-base><mjx-mrow><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D44A TEX-I"></mjx-c></mjx-mi><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D438 TEX-I"></mjx-c></mjx-mi></mjx-mrow></mjx-base></mjx-mover></mjx-math></mjx-container></span></li>
+</ul></div><div class="el-h4 heading-wrapper"><h4 data-heading="片选线的作用" dir="auto" class="heading" id="片选线的作用"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>片选线的作用</h4><div class="heading-children"><div class="el-p"><p dir="auto">用16K <em> 1位的 存储芯片 组成 64K </em> 8位 的 存储器<br>
+16K <em> 1 表示的存储容量是16 每一个存储单元 放1位<br>
+如果我们用8个 16K </em> 1 位的芯片同时读写，每一个芯片就会给出或者是写入一位二进制信息，8个芯片放在一起位一组 就构成了一个可以存八位的单元<br>
+<span alt="Pasted image 20241030181908.png" src="Pasted image 20241030181908.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241030181908.png" src="lib/media/pasted-image-20241030181908.png" style="width: 300px; max-width: 100%;"></span><br>
+对这八个芯片形同的地址同时进行操作 每个芯片一位 就会同时操作六位<br>
+布置四组就是题目的要求<br>
+<span alt="Pasted image 20241030182432.png" src="Pasted image 20241030182432.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030182432.png" src="lib/media/pasted-image-20241030182432.png" style="width: 500px; max-width: 100%;"></span><br>
+每八片时一起工作的，我们把每一组的片选线连接在一起<br>
+我们把64K空间进行划分 第一组就是0~16K-1 这样子  每一个地址都能同时操作8片的同一地方</p></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="半导体存储芯片的译码驱动方式" dir="auto" class="heading" id="半导体存储芯片的译码驱动方式"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>半导体存储芯片的译码驱动方式</h3><div class="heading-children"><div class="el-h4 heading-wrapper"><h4 data-heading="线选法" dir="auto" class="heading" id="线选法"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>线选法</h4><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030182903.png" src="Pasted image 20241030182903.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030182903.png" src="lib/media/pasted-image-20241030182903.png" style="width: 500px; max-width: 100%;"></span><br>
+在图片上给出的是<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D434 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c30"></mjx-c></mjx-mn></mjx-script></mjx-msub></mjx-math></mjx-container></span>-<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D434 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c33"></mjx-c></mjx-mn></mjx-script></mjx-msub></mjx-math></mjx-container></span> 四位地址  这代表着有<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msup><mjx-mn class="mjx-n"><mjx-c class="mjx-c32"></mjx-c></mjx-mn><mjx-script style="vertical-align: 0.363em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c34"></mjx-c></mjx-mn></mjx-script></mjx-msup><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3D"></mjx-c></mjx-mo><mjx-mn class="mjx-n" space="4"><mjx-c class="mjx-c31"></mjx-c><mjx-c class="mjx-c36"></mjx-c></mjx-mn></mjx-math></mjx-container></span>个存储单元<br>
+数据线是从<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D437 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c30"></mjx-c></mjx-mn></mjx-script></mjx-msub></mjx-math></mjx-container></span>-<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D437 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c37"></mjx-c></mjx-mn></mjx-script></mjx-msub></mjx-math></mjx-container></span> 说明每个存储单元有8位<br>
+地址译码器 输入是 4个信号 译码成了 16个信号  每一个输入 16根线中只有1跟线有信号<br>
+下图是一个读选通的过程<br>
+当地址线是4个0的时候，只有0这根片选线是可用的<br>
+<span alt="Pasted image 20241030185721.png" src="Pasted image 20241030185721.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030185721.png" src="lib/media/pasted-image-20241030185721.png" style="width: 500px; max-width: 100%;"></span><br>
+但是问题是我们的存储器没有这么小的<br>
+如果说我们是1兆的存储器，进入是二十条线的 出来就是1兆条线 呃呃</p></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="重合法" dir="auto" class="heading" id="重合法"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>重合法</h4><div class="heading-children"><div class="el-p"><p dir="auto">实际上线选法是把整个存储单元做成一个线性的数组的样子<br>
+重合法是做成一个二维矩阵的样子<br>
+<span alt="Pasted image 20241030190940.png" src="Pasted image 20241030190940.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030190940.png" src="lib/media/pasted-image-20241030190940.png" style="width: 500px; max-width: 100%;"></span><br>
+X叫行地址  Y叫列地址 分别译码 来确定存储单元<br>
+过程如图所示：<br>
+<span alt="Pasted image 20241030201134.png" src="Pasted image 20241030201134.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030201134.png" src="lib/media/pasted-image-20241030201134.png" style="width: 500px; max-width: 100%;"></span><br>
+事实上其实0,31的数据也会输出 但是由于Y这上面Y31这边的管子（其实是栅级管）不导通 所以不会送到数据线上 没法得到输出</p></div><div class="el-p"><p dir="auto">存就是两边</p></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="随机存取存储器（RAM）" dir="auto" class="heading" id="随机存取存储器（RAM）"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>随机存取存储器（RAM）</h3><div class="heading-children"><div class="el-h4 heading-wrapper"><h4 data-heading="静态RAM（SRAM）" dir="auto" class="heading" id="静态RAM（SRAM）"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>静态RAM（SRAM）</h4><div class="heading-children"><div class="el-div"><div data-callout-metadata="" data-callout-fold="" data-callout="note" class="callout"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg></div><div class="callout-title-inner">Note</div></div><div class="callout-content">
+<p dir="auto">Question：</p>
+<ol>
+<li data-line="2" dir="auto">既然是存储器 就要有存储元件 存储元件保存01的原理是什么？</li>
+<li data-line="3" dir="auto">基本单元电路是怎么构成的？</li>
+<li data-line="4" dir="auto">对单元电路如何进行读出和写入？</li>
+<li data-line="5" dir="auto">用单元电路做出来的典型芯片的结构是怎么样的？</li>
+<li data-line="6" dir="auto">这个芯片如何进行读出和写入操作？</li>
+</ol>
+</div></div></div><div class="el-p"><p dir="auto">其实保存01的方法有好多种，比如说我们可以通过一个开关来表示  比如说断开是0 连通是1。也可以用熔丝表示，但是熔丝一旦断开 再连起来 就非常难了<br>
+对于随机存取存储器的静态RAM的核心其实就是用了一个触发器<br>
+<span alt="Pasted image 20241030202349.png" src="Pasted image 20241030202349.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030202349.png" src="lib/media/pasted-image-20241030202349.png" style="width: 500px; max-width: 100%;"></span><br>
+触发器是由四个管子构成的 t1-t4 这是一个双稳态的触发器   一端是0 另一端就是1<br>
+除了这四个管子之外，还有两个管子 t5 t6<br>
+t1 - t4解决了用什么样的电路来存放01 t5 t6 是用来解决我们对这个存储元件进行读或者写的，t5 t6是通过行地址选择来进行控制的，如果这个行地址选择一旦有效的话，两个管子就会导通<br>
+t5 t6叫行开关<br>
+一共是六个晶体管<br>
+其中不单单是这么一个   是这么多排在一起的<br>
+其中t7 t8是这一列的开关<br>
+当行地址被选择的  这一行上的t5 t6都会被打开</p></div><div class="el-p"><p dir="auto">由于是双稳态的电路 当我们进行写入的时候 要给A和A'都写入数据 我们在A端输入数据 比如是0 在另一端我们是采用了 三态门  取反  变成1 给了A'</p></div><div class="el-p"><p dir="auto">静态RAM基本电路读操作</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241030220648.png" src="Pasted image 20241030220648.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030220648.png" src="lib/media/pasted-image-20241030220648.png" style="width: 500px; max-width: 100%;"></span><br>
+值得注意的是前面也提到了  行都打开了  但是在t7这边被截止了 就是最右边的这个线没被画红</p></div><div class="el-p"><p dir="auto">静态RAM基本带路写操作<br>
+<span alt="Pasted image 20241030221045.png" src="Pasted image 20241030221045.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030221045.png" src="lib/media/pasted-image-20241030221045.png" style="width: 500px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">举例：Intel 2114</p></div><div class="el-p"><p dir="auto">外特性<br>
+<span alt="Pasted image 20241030221134.png" src="Pasted image 20241030221134.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030221134.png" src="lib/media/pasted-image-20241030221134.png" style="width: 500px; max-width: 100%;"></span><br>
+WE是读写信号 低电平为写 高电平为读<br>
+CS为片选信号 只有为低电平的时候，这个2114芯片才能被选中<br>
+左侧是地址 1k个存储单元<br>
+右侧是数据线 每个存储单元读入读出4位信号<br>
+容量：1K <em> 4 -&gt; 64 </em> 64 阵列<br>
+<span alt="Pasted image 20241030221502.png" src="Pasted image 20241030221502.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030221502.png" src="lib/media/pasted-image-20241030221502.png" style="width: 500px; max-width: 100%;"></span><br>
+分成了四组 每一组是16列<br>
+行地址 是 6位 通过 译码器 变为64位  即64行<br>
+列地址 由于Intel 2114是想一次性 读写4位  所以Intel 2114分成了4组 每一组是16列 也就是图中译码完后的0-15  每一个列选信号控制了每一组当中的一列 比如说第0个列选信号控制的是第一二三四组中的第零列 刚好四位</p></div><div class="el-p"><p dir="auto">Intel2114 读操作<br>
+<span alt="Pasted image 20241030222856.png" src="Pasted image 20241030222856.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030222856.png" src="lib/media/pasted-image-20241030222856.png" style="width: 500px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">Intel2114 写操作<br>
+<span alt="Pasted image 20241030223205.png" src="Pasted image 20241030223205.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241030223205.png" src="lib/media/pasted-image-20241030223205.png" style="width: 500px; max-width: 100%;"></span></p></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="动态RAM（DRAM）" dir="auto" class="heading" id="动态RAM（DRAM）"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>动态RAM（DRAM）</h4><div class="heading-children"><div class="el-p"><p dir="auto">解决以下的问题：</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">保存0和1的原理是什么？</li>
+<li data-line="1" dir="auto">基本单元电路的构成是什么？</li>
+<li data-line="2" dir="auto">对单元电路如何读出和写入？</li>
+<li data-line="3" dir="auto">典型芯片的结构是什么样子的？</li>
+<li data-line="4" dir="auto">动态RAM芯片如何进行读出和写入操作</li>
+<li data-line="5" dir="auto">动态RAM为什么要加进行刷新，刷新方法是什么？</li>
+</ul></div><div class="el-p"><p dir="auto">前面也提到过了 保存0和1的方法其实有很多，我们在静态RAM的时候用的是双稳态触发器<br>
+动态RAM我们利用的电容 电容保存电荷为1</p></div><div class="el-h5 heading-wrapper"><h5 data-heading="三管动态RAM" dir="auto" class="heading" id="三管动态RAM"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>三管动态RAM</h5><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241103100658.png" src="Pasted image 20241103100658.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241103100658.png" src="lib/media/pasted-image-20241103100658.png" style="width: 500px; max-width: 100%;"></span><br>
+这是一个基本的结构  核心就是Cg电容<br>
+t1 t2 t3是是哪个控制管  控制读出和写入<br>
+读选择线有效 t2导通<br>
+写选择线有效 t3导通</p></div><div class="el-p"><p dir="auto">下面我们来看一下三管动态RAM的操作过程<br>
+预充电信号有效 t4打开  Vdd通过t4会对读数据线进行充电 使得读数据线变成高电平<br>
+1.如果现在Cg当中保存的信息是0 也就是说这个电容并没有进行充电 t1的栅极就是低电平 t1不会导通，读数据线就会保持高电平<br>
+也就是说如果我们电容里面保存的数据是0  在读数据线上读出来的就是1<br>
+<span alt="Pasted image 20241103103817.png" src="Pasted image 20241103103817.png" class="internal-embed media-embed image-embed is-loaded" style="width: 400px; max-width: 100%;"><img alt="Pasted image 20241103103817.png" src="lib/media/pasted-image-20241103103817.png" style="width: 400px; max-width: 100%;"></span><br>
+2.如果我们保存的信息是1  也就是说Cg这个电容是被充电的  那么T1的栅极就是1 有电 t1导通  这个时候读数据线保存的高电平就会通过t1 t2放点 变成低电平<br>
+<span alt="Pasted image 20241103104021.png" src="Pasted image 20241103104021.png" class="internal-embed media-embed image-embed is-loaded" style="width: 400px; max-width: 100%;"><img alt="Pasted image 20241103104021.png" src="lib/media/pasted-image-20241103104021.png" style="width: 400px; max-width: 100%;"></span><br>
+这个过程说明我们读出的信息和原存的信息是相反的！！！ 所以说我如果想读出里面存的数据的话，我要在读数据线上加一个非门<br>
+<a data-tooltip-position="top" aria-label="MOS管" data-href="MOS管" href="lcu-principles-of-computer-composition/mos管.html" class="internal-link" target="_self" rel="noopener nofollow">补充知识：MOS管</a></p></div><div class="el-p"><p dir="auto">如果进行写入的话，写入的信息和存的信息是相同的<br>
+当要写入的时候 写选择线有效  为1 t3接通</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">如果写数据线为高电平 那么会通过t3 像Cg充电 Cg存1</li>
+<li data-line="1" dir="auto">如果写数据线为低电平 那么会通过t3 像Cg放点 Cg存0</li>
+</ul></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="单管动态RAM" dir="auto" class="heading" id="单管动态RAM"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>单管动态RAM</h5><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241103100847.png" src="Pasted image 20241103100847.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241103100847.png" src="lib/media/pasted-image-20241103100847.png" style="width: 300px; max-width: 100%;"></span><br>
+原理都是保存在电容中<br>
+字线是控制线，如果相应的被选中 那么字线就会被选中 T就会打开 电容就可以通过t进行充电和放电了</p></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="三管动态RAM 芯片 Intel 1103" dir="auto" class="heading" id="三管动态RAM_芯片_Intel_1103"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>三管动态RAM 芯片 Intel 1103</h5><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241103105822.png" src="Pasted image 20241103105822.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241103105822.png" src="lib/media/pasted-image-20241103105822.png"></span><br>
+<span alt="Pasted image 20241103103817.png" src="Pasted image 20241103103817.png" class="internal-embed media-embed image-embed is-loaded" style="width: 400px; max-width: 100%;"><img alt="Pasted image 20241103103817.png" src="lib/media/pasted-image-20241103103817.png" style="width: 400px; max-width: 100%;"></span><br>
+我们发现Intel1103其实就是有好多个这个三管动态RAM构成的 明显的能看到图片中每一个都有上线两根线  就是读选择线和写选择线<br>
+我们发现行地址译码器 的输出是每一行都对应了两个信号<br>
+<font color="#4bacc6">这就说明在行地址译码器这个地方参加译码的不仅仅是地址，还有读写控制信号！</font><br>
+读操作：<br>
+如果我们给出的行地址是0 进行读操作 第零行读选择线有效，第零行所有的单元都被选中 进行读操作<br>
+列地址依然是0 第0列被选中  交叉单元被选中<br>
+该单元通过读数据线将数据送到读写控制电路上，同时向外进行输出<br>
+<span alt="Pasted image 20241103133108.png" src="Pasted image 20241103133108.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241103133108.png" src="lib/media/pasted-image-20241103133108.png"></span><br>
+这儿有一个三角形的电子器件，这个器件是一个刷新放大器<br>
+使用刷新放大器的原因？<br>
+我们在存储1和0是通过电容存电荷这个原理来保存信息的，电容呢会漏电，经过一段时间后，电容上的信号会消失，所以采用刷新放大器把电容中保存的信息进行从现，没经过一段时间都对给定的单元电路中的信息进行刷新<br>
+写操作：<br>
+假设行地址是5个1 第31行所有的单元都被选中  写选择线有效<br>
+假设列地址是0001 第1列被选中 交叉单元被选中<br>
+数据通过D经过读写控制电路写入该单元<br>
+<span alt="Pasted image 20241103133916.png" src="Pasted image 20241103133916.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241103133916.png" src="lib/media/pasted-image-20241103133916.png"></span></p></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="单管动态RAM 4116芯片" dir="auto" class="heading" id="单管动态RAM_4116芯片"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>单管动态RAM 4116芯片</h5><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241103134051.png" src="Pasted image 20241103134051.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20241103134051.png" src="lib/media/pasted-image-20241103134051.png" style="width: 700px; max-width: 100%;"></span><br>
+这个4116芯片是16K * 1位的<br>
+16K需要14根地址线的 但是这个芯片只有七根地址线 这14位地址是分两次进行传送的</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">第一次接收到的是7位行地址 放到行地址缓冲器当中</li>
+<li data-line="1" dir="auto">第二次接受到的是7位列地址 放到列地址缓冲器当中<br>
+右边有一个IO缓冲器  输入通过数据输入寄存器通过缓冲器输入   输出通过缓冲器和数据输出驱动输出<br>
+值得注意的是这个芯片有一个小的控制器：<br>
+就是上面那一部分<br>
+该控制器的输入是：</li>
+<li data-line="6" dir="auto">行选通信号</li>
+<li data-line="7" dir="auto">列选通信号</li>
+<li data-line="8" dir="auto">读写控制信号<br>
+产生的是：</li>
+<li data-line="10" dir="auto">行时钟</li>
+<li data-line="11" dir="auto">列时钟</li>
+<li data-line="12" dir="auto">写时钟<br>
+进一步控制了读操作和写操作</li>
+</ul></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241105113724.png" src="Pasted image 20241105113724.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20241105113724.png" src="lib/media/pasted-image-20241105113724.png" style="width: 700px; max-width: 100%;"></span><br>
+16K 的存储单元 被放在128行 128列上<br>
+在第63行到64行之间  每一列都有一个读放大器<br>
+这个读放大器是一个跷跷板电路   所谓的跷跷板电路 就是说 如果一端为0  另一端就为1</p></div><div class="el-p"><p dir="auto">读操作：<br>
+加入写入的行信号是1000000的话，那么第63行被选中 管子打开  这个时候如果电容有点  那么读放大器左端就是1 右端就是0  如果电容没有电，那么读放大器左端就是0 右端就是1<br>
+然后给出列地址 相对应的列的晶体管打开  读放大器右侧的信号送入读写线  经过IO缓冲 经过输出驱动 输出<br>
+<span alt="Pasted image 20241105115308.png" src="Pasted image 20241105115308.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20241105115308.png" src="lib/media/pasted-image-20241105115308.png" style="width: 700px; max-width: 100%;"></span><br>
+但是有一个问题 就是<br>
+0-63行：</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">电容有电 读选择线上读到的是0</li>
+<li data-line="1" dir="auto">电容没电 读选择线上读到的是1<br>
+64行往后 读放大器上的这些行</li>
+<li data-line="3" dir="auto">电容有电 读选择线上读到的是1</li>
+<li data-line="4" dir="auto">电容没点 读选择线上读到的是0<br>
+？？？？<br>
+啊那为啥加放大器？？？？</li>
+</ul></div><div class="el-p"><p dir="auto">写操作：<br>
+要写入的数据通过数据输入 通过IO缓冲 被放入数据线<br>
+所有的行被选中<br>
+当列地址输入之后<br>
+唯一的那个管子变得有效<br>
+数据从数据线传到读放大器<br>
+如果再读放大器左边当时就是数据线上是0 电容就有电<br>
+<span alt="Pasted image 20241105115716.png" src="Pasted image 20241105115716.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20241105115716.png" src="lib/media/pasted-image-20241105115716.png" style="width: 700px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">其实存的时候就反转了 读的时候再反转 其实也不会出错哈哈哈哈</p></div><div class="el-p"><p dir="auto">但是为啥放大器<br>
+好像是为了再生 恢复电路 上面提到过<br>
+这就引出了动态RAM的刷新</p></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="动态RAM刷新" dir="auto" class="heading" id="动态RAM刷新"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>动态RAM刷新</h5><div class="heading-children"><div class="el-p"><p dir="auto">动态RAM的原理 就是通过电容来存储0 1<br>
+但是电容的弊端是会漏电<br>
+也就是说 如果我们一段时间不对电容中的信息再生的话 那么这部分信息就丢失了<br>
+比如说对电容充过电  一段时间后就 漏完了<br>
+所以要进行动态RAM刷新</p></div><div class="el-p"><p dir="auto">这个动态RAM刷新是跟行地址有关的<br>
+换句话说 就是每一次刷新操作刷新的是动态RAM当中一行所有的基本单元</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241103133108.png" src="Pasted image 20241103133108.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241103133108.png" src="lib/media/pasted-image-20241103133108.png"></span><br>
+对于当时学的Intel 1103 我们发现<br>
+当行信号有效后  其实这一行的所有单元都会选中 <font color="#4bacc6">而且这一行所有数据都会到读数据线上</font>？<br>
+我们如果在读数据线和写数据线之间放一个刷新放大器的话  那么就会再次写入存储单元</p></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">
+<p>集中式刷新<br>
+将刷新的时间断放到相对集中的时间断来操作<br>
+假设 存取周期为0.5微秒  动态RAM刷新的整个过程周期为2ms<br>
+依然为128 128矩阵作为例子<br>
+<span alt="Pasted image 20241105145553.png" src="Pasted image 20241105145553.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241105145553.png" src="lib/media/pasted-image-20241105145553.png"></span><br>
+2ms一共是4000个存取周期<br>
+前3872个周期可以供CPU或者IO进行读出或者写入<br>
+后128个周期用于刷新再生  这段时间是不能用的 叫“死区”<br>
+集中刷新存在的问题是 在死区这段时间里 如果CPU和IO想要写入或者读写 CPU只能进行等待</p>
+</li>
+<li data-line="10" dir="auto">
+<p>分散刷新<br>
+假设存取周期为1微秒<br>
+存取周期从0.5微秒变成1微秒是因为<br>
+<span alt="Pasted image 20241105150404.png" src="Pasted image 20241105150404.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241105150404.png" src="lib/media/pasted-image-20241105150404.png"></span><br>
+整个存储周期就是图片上的tc<br>
+原来的存储周期是tm 也就是CPU和IO要读写的那个时间<br>
+tr专门用于动态RAM某一行的刷新<br>
+这种方法128微秒就把128行刷新完了  过渡刷新 刷的太快了？<br>
+虽然没有死区 但是把读写周期加长了  芯片的性能下降了</p>
+</li>
+<li data-line="20" dir="auto">
+<p>异步刷新：分散刷新和集中刷新 相结合<br>
+<span alt="Pasted image 20241105151042.png" src="Pasted image 20241105151042.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241105151042.png" src="lib/media/pasted-image-20241105151042.png"></span><br>
+那就把2ms分成128分  每一份是15.6微秒<br>
+每一段时间里最后进行某一行的刷新<br>
+相对于每一个15.6 微秒来说  这是一个集中式刷新<br>
+相对于整个来说  这是个分散刷新<br>
+这样每行没2ms刷新一次 没有过渡刷新<br>
+死区为每15.6微秒中的0.5微秒<br>
+如果这段时间安排的好的话，比如安排在指令译码阶段 不会影响CPU和IO对静态RAM的读写就不能叫出现了死区</p>
+</li>
+</ol></div></div></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="只读存储器（ROM）" dir="auto" class="heading" id="只读存储器（ROM）"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>只读存储器（ROM）</h3><div class="heading-children"><div class="el-p"><p dir="auto">只读存储器一般用于保存系统程序或者是系统的配置信息</p></div><div class="el-h4 heading-wrapper"><h4 data-heading="掩膜 ROM" dir="auto" class="heading" id="掩膜_ROM"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>掩膜 ROM</h4><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="8d2bd2bbefd3f8e98719f97a954f916.jpg" src="8d2bd2bbefd3f8e98719f97a954f916.jpg" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="8d2bd2bbefd3f8e98719f97a954f916.jpg" src="lib/media/8d2bd2bbefd3f8e98719f97a954f916.jpg" style="width: 500px; max-width: 100%;"></span><br>
+最上面这一排是预充电管 VCC可以概括为电路的供电电压或者电源电压<br>
+当VCC是高电平  经过预充电管充电以后 所有的位线都是高电平（位线就是竖着的线）<br>
+行信号列信号选择交叉点被选中<br>
+如果这个点上有管子  那位线就接地了  位线高电平变成低电平<br>
+如果没有管子 仍然是低电平<br>
+位线上的数据 通过列管空管 只有这一列的数据能到达最下面这根线上   然后通过读放大器 和取反 输出</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241105170649.png" src="Pasted image 20241105170649.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20241105170649.png" src="lib/media/pasted-image-20241105170649.png" style="width: 500px; max-width: 100%;"></span><br>
+呃呃其实往里存的时候<br>
+如果行和列的交叉点有MOS管的话 就是1  没有 就是0<br>
+行和列有没有MOS管 是厂家在生产芯片的时候制作的，用户是无法改变的</p></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="PROM（一次性编程）" dir="auto" class="heading" id="PROM（一次性编程）"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>PROM（一次性编程）</h4><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241105172332.png" src="Pasted image 20241105172332.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241105172332.png" src="lib/media/pasted-image-20241105172332.png" style="width: 300px; max-width: 100%;"></span><br>
+核心就是这个熔丝<br>
+通过熔丝断没断区别1 和 0<br>
+要想保存0  就用一个大的电流把熔丝烧断<br>
+一旦断了就没法复原了  所以这是一种破坏性的编程和烧录</p></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="EPROM(多次性编程)" dir="auto" class="heading" id="EPROM(多次性编程)"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>EPROM(多次性编程)</h4><div class="heading-children"><div class="el-p"><p dir="auto">N型沟道浮动栅MOS电路<br>
+<span alt="Pasted image 20241106163616.png" src="Pasted image 20241106163616.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241106163616.png" src="lib/media/pasted-image-20241106163616.png"></span></p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">G 栅极</li>
+<li data-line="1" dir="auto">S 源</li>
+<li data-line="2" dir="auto">D 漏<br>
+按理说当G为高电平 D和S应该是导通的<br>
+但是对于N型沟道浮动栅MOS管，如果我们在D加上正电压，那么源和漏端会形成一个浮动栅 使得D和S没法导通 保存0<br>
+如果不加电压  没有浮动栅 保存1<br>
+也就是说 希望保存0的地方 我们给D加高电压 希望保存1的地方我们不加电压<br>
+如果要更改的话，我们要驱散浮动栅<br>
+驱散浮动栅要用紫外线来擦洗（用紫外线照射）<br>
+<span alt="Pasted image 20241106164359.png" src="Pasted image 20241106164359.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241106164359.png" src="lib/media/pasted-image-20241106164359.png"></span><br>
+这种芯片有一个石英窗口 ，紫外线通过石英窗口来进行浮动栅的驱散</li>
+</ul></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="EEPROM" dir="auto" class="heading" id="EEPROM"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>EEPROM</h4><div class="heading-children"><div class="el-p"><p dir="auto">电可擦写<br>
+局部擦写<br>
+全部擦写</p></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="Flash Memory 闪存" dir="auto" class="heading" id="Flash_Memory_闪存"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Flash Memory 闪存</h4><div class="heading-children"></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="存储器与CPU的连接" dir="auto" class="heading" id="存储器与CPU的连接"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储器与CPU的连接</h3><div class="heading-children"><div class="el-h4 heading-wrapper"><h4 data-heading="存储器容量的扩展" dir="auto" class="heading" id="存储器容量的扩展"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储器容量的扩展</h4><div class="heading-children"><div class="el-p"><p dir="auto">要构成一个主存储器 往往需要多个存储芯片公共组成<br>
+对于存储器容量的扩展有三种</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">位扩展</li>
+<li data-line="1" dir="auto">字扩展</li>
+<li data-line="2" dir="auto">同时扩展</li>
+</ul></div><div class="el-h5 heading-wrapper"><h5 data-heading="位扩展" dir="auto" class="heading" id="位扩展"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>位扩展</h5><div class="heading-children"><div class="el-p"><p dir="auto">目的：增加存储器的字长<br>
+核心：两个芯片当成一个芯片来用<br>
+eg:1K <em> 4位芯片 -&gt; 1K </em> 8位 存储器<br>
+1K * 4 位的意思是说 我们手头的这个芯片有10根地址线，1K个存储单元，每个存储单元可以存储4位数据<br>
+但我们要构成的存储器要存储8位数据<br>
+从原理上将 我们把两个芯片放到一起 只要一起片选就好<span alt="Pasted image 20241106165536.png" src="Pasted image 20241106165536.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241106165536.png" src="lib/media/pasted-image-20241106165536.png"></span></p></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="字扩展" dir="auto" class="heading" id="字扩展"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>字扩展</h5><div class="heading-children"><div class="el-p"><p dir="auto">目的：增加存储字的数量<br>
+eg:1K <em> 8 位存储芯片组成 2K </em> 8位的存储器<br>
+我们使用两片 1K的 来组成2K的存储器<br>
+但是值得注意的是2K的存储器 需要有11根地址线<br>
+但是1K的只有10根地址线<br>
+我们把地址线和数据线都接入这两个芯片 如下：<br>
+<span alt="Pasted image 20241107161607.png" src="Pasted image 20241107161607.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241107161607.png" src="lib/media/pasted-image-20241107161607.png"></span><br>
+这时候我们不想让两个芯片同时工作的办法就是：<br>
+第11根地址线（其实编号是10）为0的时候 放入第一个存储器  如果为1放入第二个存储器<br>
+<span alt="Pasted image 20241107164225.png" src="Pasted image 20241107164225.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241107164225.png" src="lib/media/pasted-image-20241107164225.png"></span><br>
+从11个0开始 到1个0 10个1 这1k空间放给了第一个芯片  其余的在第二个芯片<br>
+</p></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="字位同时扩展" dir="auto" class="heading" id="字位同时扩展"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>字位同时扩展</h5><div class="heading-children"><div class="el-p"><p dir="auto">eg：1K <em> 4位 存储芯片 组成 4K </em> 8位的存储器<br>
+<span alt="Pasted image 20241107164632.png" src="Pasted image 20241107164632.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241107164632.png" src="lib/media/pasted-image-20241107164632.png"></span><br>
+值得注意的是 通过a11 和a10进行片选 ：<br>
+00选择第一组（两个）<br>
+01选择第二组<br>
+.......<br>
+所以这里用了一个2-4的译码器</p></div></div></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="存储器与CPU的连接" dir="auto" class="heading" id="存储器与CPU的连接"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储器与CPU的连接</h4><div class="heading-children"><div class="el-ul"><ul>
+<li data-line="0" dir="auto">地址线的连接<br>
+存储器要根据CPU给出的地址找到相应的存储单元。<br>
+这个存储单元是哪个芯片的哪个存储单元</li>
+<li data-line="3" dir="auto">数据线的连接<br>
+CPU的数据线可能比存储器的数据线条数要多 所以我们为了CPU能认，所以要对存储器的数据线做位扩展</li>
+<li data-line="5" dir="auto">读写控制线的连接</li>
+<li data-line="6" dir="auto">片选线的连接<br>
+落在哪几个芯片上<br>
+确认CPU这次访问访问的存储器 而不是 IO</li>
+<li data-line="9" dir="auto"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>合理选择芯片
+<ul>
+<li data-line="10" dir="auto">选择ROM和RAM？<br>
+保存系统程序 ROM<br>
+配置信息 ROM<br>
+用户程序区 系统程序运行区 RAM</li>
+<li data-line="14" dir="auto">选择两个1k <em> 4 还是一个 1k </em> 8的</li>
+</ul>
+</li>
+</ul></div><div class="el-p"><p dir="auto"> eg：</p></div><div class="el-p"><p dir="auto"> <span alt="d4cea9941d695cd18abf4fbf0c422dd.jpg" src="d4cea9941d695cd18abf4fbf0c422dd.jpg" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="d4cea9941d695cd18abf4fbf0c422dd.jpg" src="lib/media/d4cea9941d695cd18abf4fbf0c422dd.jpg" style="width: 500px; max-width: 100%;"></span><br>
+MREQ（低电平有效）作为访存控制信号的意思是说<br>
+低电平即为访问存储器<br>
+高电平为访问IO设备<br>
+6000H~67FFH为系统程序区<br>
+6800H~6BFFH为用户程序区</p></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">
+<p>先转换成二进制<br>
+系统程序区：<br>
+0110 0000 0000 0000<br>
+......<br>
+0110 0111 1111 1111<br>
+用户程序区：<br>
+0110 1000 0000 0000<br>
+.......<br>
+0110 1011 1111 1111</p>
+</li>
+<li data-line="9" dir="auto">
+<p>确定芯片的类型<br>
+对于系统程序区 我们使用ROM<br>
+系统程序区是从低11位全为0 变成低11位全为1<br>
+即2K <em> 8位（CPU地址线位8位）<br>
+由于正好有一片2K </em> 8的ROM<br>
+所以选择这片ROM</p>
+<p>对于用户程序区 我们选择RAM<br>
+从后10位全为0 到后10位全为1<br>
+位1K <em> 8<br>
+只能用题目中的1K </em> 4 的RAM了 只能用两片<br>
+选择原则是芯片数量尽量少！</p>
+</li>
+<li data-line="21" dir="auto">
+<p>分配地址线<br>
+对于ROM 2K需要11根地址线 即a0-a10<br>
+0110 0|000 0000 0000<br>
+0110 0|111 1111 1111<br>
+竖线右边是直接和芯片连接  左边作为芯片的选择信号<br>
+对于两片 1K * 4 的RAM 需要10根地址线 即a0-a9<br>
+0110 10|00 0000 0000<br>
+0110 10|11 1111 1111<br>
+右边接到两片RAM上<br>
+<span alt="Pasted image 20241107194753.png" src="Pasted image 20241107194753.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241107194753.png" src="lib/media/pasted-image-20241107194753.png"></span></p>
+</li>
+<li data-line="31" dir="auto">
+<p>确定片选信号<br>
+教材上给出的是74138译码器<br>
+<span alt="Pasted image 20241107192748.png" src="Pasted image 20241107192748.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241107192748.png" src="lib/media/pasted-image-20241107192748.png"></span><br>
+74138译码器有三个输入CBA<br>
+74138的G1高电平 G2A G2B要是低电平  才能工作<br>
+我们发现A14 一直为1 所以可以接入G1上<br>
+MREQ（一定不要忘了MREQ）和 A15一直是0  接到G2A 和G2B<br>
+那么a11 a23 a13就接到abc上<br>
+我们其实发现对于74128的输入就是abc这三个输 那么3个二进制数可以表示0~7 刚好就是输出的y0~y9<br>
+所以在这里100 其实就是y4 所以是从y4接出来的<br>
+同时注意在RAM的时候要求a10为  CBA为101  从y5接出来并起来</p>
+</li>
+<li data-line="42" dir="auto">
+<p>信号线的连接<br>
+信号线 读写信号只需要和RAM相连<br>
+如果ROM有OE 也需要和信号线相连（OE是输出允许，低电平有效）</p>
+</li>
+<li data-line="45" dir="auto">
+<p>数据线的连接</p>
+</li>
+</ol></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="存储器的校验解决问题" dir="auto" class="heading" id="存储器的校验解决问题"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>存储器的校验解决问题</h3><div class="heading-children"><div class="el-ol"><ol>
+<li data-line="0" dir="auto">
+<p>为什么要对存储器的信息进行校验？<br>
+以内存为例<br>
+内存的信息 动态RAM保存在电容当中 如果是静态RAM 保存在触发器中<br>
+如果内存所处的电磁环境比较复杂 或者收到带电粒子的打击<br>
+就会造成电容的充放电 和 触发器的翻转<br>
+存放在存储器中的信息就会出错</p>
+<p>内存中是放了程序的代码中 如果不进行校验 如果出错 就会造成程序运行错误</p>
+</li>
+<li data-line="8" dir="auto">
+<p>为了能够校验出信息是否正确，如何进行编码？</p>
+</li>
+<li data-line="9" dir="auto">
+<p>纠错和检错能力和哪些因素有关</p>
+</li>
+<li data-line="10" dir="auto">
+<p>校验出信息出错后如何进行纠错？</p>
+</li>
+<li data-line="11" dir="auto">
+<p>除了教材上给出的校验码，还有哪些校验码 原理是什么？</p>
+</li>
+</ol></div><div class="el-h4 heading-wrapper"><h4 data-heading="汉明码介绍" dir="auto" class="heading" id="汉明码介绍"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>汉明码介绍</h4><div class="heading-children"><div class="el-p"><p dir="auto">我们有一个合法代码的集合<br>
+如果代码集合是{000,001,010,011,100,101,110,111}<br>
+如果001 发生错误 变成000 还被认为是正确的  显然代码集合长这样不可取<br>
+如果代码集合是{000,011,101,110}<br>
+如果代码发生错误变成了100  可以检测出错误来<br>
+但是不知道这个错误是110 还是000 还是101 变出来的<br>
+检1位错，纠0位错<br>
+如果采用三倍冗余的方式来存储0和1  000存0 111存1<br>
+可以判断1位错 但是很难判断两位错<br>
+检1位错，纠1位错<br>
+四备份冗余的方式<br>
+只能检测到两位错   凑错只能到1位错<br>
+五备份冗余<br>
+检2位错  纠2位错</p></div><div class="el-p"><p dir="auto">编码的检测能力和纠错能力和什么有关？<br>
+任意两组合法代码之间的二进制位的最小差异数<br>
+差异的越多，检错能力越强 纠错能力越强<br>
+</p></div><div class="el-p"><p dir="auto">新概念：编码的最小记录：就是任意两组合法代码之间的二进制位数的最小差异</p></div><div class="el-div"><div class="math math-block is-loaded"><mjx-container class="MathJax" jax="CHTML" display="true"><mjx-math display="true" class="MJX-TEX" style="margin-left: 0px; margin-right: 0px;"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D43F TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2212"></mjx-c></mjx-mo><mjx-mn class="mjx-n" space="3"><mjx-c class="mjx-c31"></mjx-c></mjx-mn><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3D"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D437 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="3"><mjx-c class="mjx-c1D436 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n"><mjx-c class="mjx-c28"></mjx-c></mjx-mo><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D437 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c2265"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D436 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n"><mjx-c class="mjx-c29"></mjx-c></mjx-mo></mjx-math></mjx-container></div></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">L——编码的最小距离</li>
+<li data-line="1" dir="auto">D——检测错误的位数</li>
+<li data-line="2" dir="auto">C——纠正错误的位数</li>
+</ul></div><div class="el-p"><p dir="auto">汉明码是具有一位纠错能力的编码<br>
+汉明码采用奇偶校验的方式<br>
+汉明码采用分组校验的方式</p></div><div class="el-p"><p dir="auto">假设有一串代码是00100011 采用汉明码偶数校验 需要加一位校验位 使得1位偶数<br>
+变为1 00100011<br>
+假如最后的1不是偶数个  那说明一位出现了错误 哪一位不知道<br>
+但我们可以通过分组来更精确的划定是哪一个范围出错<br>
+我们采用两位奇偶校验位 那就是把这八位分成两组<br>
+每一组加一个校验位 就得到了一个新的校验码：1 0010 0 0011</p></div><div class="el-p"><p dir="auto">我们这个例子采用的是划分的方式分组 组和组之间没有重叠<br>
+汉明码实际上是采用了一种非划分的方式分组 组合组有交叉<br>
+假设有7位 交叉处放和<br>
+<span alt="Pasted image 20241110111713.png" src="Pasted image 20241110111713.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20241110111713.png" src="lib/media/pasted-image-20241110111713.png" style="width: 300px; max-width: 100%;"></span><br>
+对着三组分别用异或门（异或的规则是相同为1不同为0）<br>
+分别得到P3P2P1</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">如果得到3个0 那么无擦错</li>
+<li data-line="1" dir="auto">如果是001 那么是第一组唯一的位置出错  那就是1</li>
+<li data-line="2" dir="auto">如果为101 那么就是第三组和第一组的公共位置出错 那就是5<br>
+校验位是这一组自己有的  所以是124  都放在2的a次方的位置</li>
+</ul></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="汉明码的特征和求解" dir="auto" class="heading" id="汉明码的特征和求解"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>汉明码的特征和求解</h4><div class="heading-children"><div class="el-p"><p dir="auto">汉明编码的特征是<br>
+第一组  位置的二进制数 从右边数第一位为1 如XXXX1<br>
+第二组 XXX1X<br>
+……<br>
+也就是说如果X的地方为1 那么就是两组所共有的<br>
+如果是X都是0 那就是这一组所独有的</p></div><div class="el-p"><p dir="auto">汉明码的组成<br>
+汉明码的组成需要添加？位检测位  换句话说 就是分成几组？<br>
+<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msup><mjx-mn class="mjx-n"><mjx-c class="mjx-c32"></mjx-c></mjx-mn><mjx-script style="vertical-align: 0.363em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msup><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c2265"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="3"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-mn class="mjx-n" space="3"><mjx-c class="mjx-c31"></mjx-c></mjx-mn></mjx-math></mjx-container></span><br>
+校验位的位置？<br>
+2的整数次方<br>
+检测位的取值？<br>
+跟奇偶校验的 个数有关</p></div><div class="el-p"><p dir="auto">eg：0101按“偶校验”配置汉明码<br>
+1. 确定需要添加多少位汉明码<br>
+n=4  根据<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-msup><mjx-mn class="mjx-n"><mjx-c class="mjx-c32"></mjx-c></mjx-mn><mjx-script style="vertical-align: 0.363em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msup><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c2265"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="3"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-mn class="mjx-n" space="3"><mjx-c class="mjx-c31"></mjx-c></mjx-mn></mjx-math></mjx-container></span>  k=3<br>
+2. 汉明码排序<br>
+校验位放在2的整数次放位置<br>
+就是1,2,4的地方 其他地方放上0101<br>
+那么就是C1 C2 0 C4 1 0 1<br>
+3. 分组确定C1 C2 C4的值<br>
+第一组有 01 11 101 111 即 1,3,5,7位     这四个位置上已经有偶数个1了<br>
+那么C1为0<br>
+第二组有 10 11 110 111 即 2,3,6,7<br>
+C2为1<br>
+第三组有 100 101 110 111 即 4,5,6,7<br>
+C4为0<br>
+所以最终汉明码为0100101</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20241110150821.png" src="Pasted image 20241110150821.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20241110150821.png" src="lib/media/pasted-image-20241110150821.png" style="width: 700px; max-width: 100%;"></span></p></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="提高访存速度的措施" dir="auto" class="heading" id="提高访存速度的措施"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>提高访存速度的措施</h3><div class="heading-children"><div class="el-p"><p dir="auto">在计算机发展的过程中<br>
+- CPU的速度提升的非常快 指数级增长<br>
+- 存储器的提升 很慢<br>
+但是CPU执行程序的时候需要的指令和数据要来自于内存，运行结果要放到内存<br>
+CPU得不到所需要的数据和指令就只能空等<br>
+这个叫做存储墙现象</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">采用高速器件</li>
+<li data-line="1" dir="auto">采用层次结构Cache-主存</li>
+<li data-line="2" dir="auto">调整主存结构</li>
+</ul></div><div class="el-h4 heading-wrapper"><h4 data-heading="调整主存结构" dir="auto" class="heading" id="调整主存结构"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>调整主存结构</h4><div class="heading-children"><div class="el-h5 heading-wrapper"><h5 data-heading="单体多字系统" dir="auto" class="heading" id="单体多字系统"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>单体多字系统</h5><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20241110151352.png" src="Pasted image 20241110151352.png" class="internal-embed media-embed image-embed is-loaded" style="width: 600px; max-width: 100%;"><img alt="Pasted image 20241110151352.png" src="lib/media/pasted-image-20241110151352.png" style="width: 600px; max-width: 100%;"></span><br>
+比如说CPU的字长为16位<br>
+我们可以设置存储器的存储字长为64位 每一次CPU都可以访问出四个机器字长<br>
+存在的问题是</p></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">我往里存16位的时候 要经过单字长寄存器和数据寄存器然后才能存到存储体中 往里写的时候可能会造成这64位中 有48位被修改 这样就得用另外的硬件 来判断和实现防止出错</li>
+<li data-line="1" dir="auto">如果我要去取的指令不是连续存放的</li>
+</ol></div></div></div><div class="el-h5 heading-wrapper"><h5 data-heading="多体并行系统" dir="auto" class="heading" id="多体并行系统"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>多体并行系统</h5><div class="heading-children"><div class="el-ul"><ul>
+<li data-line="0" dir="auto">
+<p>高位交叉<br>
+所谓的高位交叉就是一种顺序编址<br>
+前两位是编号编码 后四位是编码<br>
+很自然<br>
+如果每一个存储体都有自己的MAR MDR 和译码器 驱动器 那么这四个存储体就可以并行的工作<br>
+CPU给出一个地址：<br>
+- 体号<br>
+- 体内地址<br>
+<span alt="Pasted image 20241111162934.png" src="Pasted image 20241111162934.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241111162934.png" src="lib/media/pasted-image-20241111162934.png"></span><br>
+在这种电路下，每个存储体都可以独立进行工作，而且每个存储体都有自己的控制电路来完成这个缓存操作<br>
+存在一个问题：<br>
+如果用户使用一个程序的话，程序按序存储<br>
+按序执行的时候<br>
+CPU不停的访问第一个存储体<br>
+那么其他三个存储体虽然是并行的 但好像并没有并行哈<br>
+这种用高位选择存储体然后低位去找存储体内容的方式 其实就是之前的存储器容量的扩展</p>
+</li>
+<li data-line="17" dir="auto">
+<p>低位交叉<br>
+各个体轮流编址 说白了就是横着编址<br>
+高位为体内地址<br>
+低位为体号<br>
+<span alt="Pasted image 20241111170244.png" src="Pasted image 20241111170244.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241111170244.png" src="lib/media/pasted-image-20241111170244.png"></span><br>
+分离式通信<br>
+<span alt="Pasted image 20241111170434.png" src="Pasted image 20241111170434.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241111170434.png" src="lib/media/pasted-image-20241111170434.png"></span><br>
+设四体低位交叉存储器，存取周期为T，总线传输周期为<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D70F TEX-I"></mjx-c></mjx-mi></mjx-math></mjx-container></span>，为实现流水线方式存取</p>
+<div class="math math-block is-loaded"><mjx-container class="MathJax" jax="CHTML" display="true"><mjx-math display="true" class="MJX-TEX" style="margin-left: 0px; margin-right: 0px;"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D447 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3D"></mjx-c></mjx-mo><mjx-mn class="mjx-n" space="4"><mjx-c class="mjx-c34"></mjx-c></mjx-mn><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D70F TEX-I"></mjx-c></mjx-mi></mjx-math></mjx-container></div>
+<p><span alt="Pasted image 20241111170703.png" src="Pasted image 20241111170703.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20241111170703.png" src="lib/media/pasted-image-20241111170703.png"></span></p>
+</li>
+</ul></div><div class="mod-footer mod-ui"></div></div></div></div></div></div></div></div></div></div><div class="sidebar-right sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content"><div class="graph-view-wrapper"><div class="sidebar-section-header">Interactive Graph</div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div></div><script defer="">let rs = document.querySelector(".sidebar-right"); rs.classList.add("is-collapsed"); if (window.innerWidth > 768) rs.classList.remove("is-collapsed"); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></body></html>

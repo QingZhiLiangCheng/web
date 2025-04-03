@@ -1,0 +1,852 @@
+<!DOCTYPE html> <html><head>
+		<title>Project1 Buffer Pool</title>
+		<base href="..\../">
+		<meta id="root-path" root-path="..\../">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
+		<meta charset="UTF-8">
+		<meta name="description" content="QingZhiLiangCheng - Project1 Buffer Pool">
+		<meta property="og:title" content="Project1 Buffer Pool">
+		<meta property="og:description" content="QingZhiLiangCheng - Project1 Buffer Pool">
+		<meta property="og:type" content="website">
+		<meta property="og:url" content="https://qingzhiliangcheng.cn/database-systems/cmu-15-445：database-systems/project1-buffer-pool.html">
+		<meta property="og:image" content="https://qingzhiliangcheng.cn/lib/media/project1-task1-lruk1(1).png">
+		<meta property="og:site_name" content="QingZhiLiangCheng">
+		<meta name="author" content="QingZhiLiangCheng"><script async="" id="webpage-script" src="lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script type="module" async="" id="graph-view-script" src="lib/scripts/graph-view.js"></script><script async="" id="graph-wasm-script" src="lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="tinycolor-script" src="lib/scripts/tinycolor.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="pixi-script" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="minisearch-script" src="https://cdn.jsdelivr.net/npm/minisearch@6.3.0/dist/umd/index.min.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="lib/media/favicon.png"><script async="" id="graph-data-script" src="lib/scripts/graph-data.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-horizontal-spacing:0.6em;--tree-vertical-spacing:0.6em;--sidebar-margin:12px}.sidebar{height:100%;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));font-size:14px;z-index:10;position:relative;overflow:hidden;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}.sidebar-left{left:0}.sidebar-right{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}body.floating-sidebars .sidebar{position:absolute}.sidebar-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .sidebar-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}.sidebar-left .sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}.sidebar-right .sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar:has(.sidebar-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:2em;width:var(--sidebar-width);top:var(--sidebar-margin);padding-inline:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}.sidebar-left .sidebar-topbar{left:0}.sidebar-right .sidebar-topbar{right:0}.topbar-content{overflow:hidden;overflow:clip;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:0!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}.sidebar-left .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}.sidebar-right .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.sidebar-section-header{margin:0 0 1em 0;text-transform:uppercase;letter-spacing:.06em;font-weight:600}body{transition:background-color var(--color-fade-speed) ease-in-out}.webpage-container{display:flex;flex-direction:row;height:100%;width:100%;align-items:stretch;justify-content:center}.document-container{opacity:1;flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0;transition:opacity .2s ease-in-out}.document-container>.markdown-preview-view{margin:var(--sidebar-margin);margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;background-color:var(--background-primary);transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}.document-container>.markdown-preview-view>.markdown-preview-sizer{padding-bottom:80vh!important;width:100%!important;max-width:var(--line-width)!important;flex-basis:var(--line-width)!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}.markdown-rendered img:not([width]),.view-content img:not([width]){max-width:100%;outline:0}.document-container>.view-content.embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}.document-container>.view-content.embed>*{max-width:100%;max-height:100%;object-fit:contain}:has(> :is(.math,table)){overflow-x:auto!important}.document-container>.view-content{overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){if("file:"!=location.protocol){let e=document.querySelectorAll("include");for(let t=0;t<e.length;t++){let o=e[t],l=o.getAttribute("src");try{const e=await fetch(l);if(!e.ok){console.log("Could not include file: "+l),o?.remove();continue}let t=await e.text(),n=document.createRange().createContextualFragment(t),i=Array.from(n.children);for(let e of i)e.classList.add("hide"),e.style.transition="opacity 0.5s ease-in-out",setTimeout((()=>{e.classList.remove("hide")}),10);o.before(n),o.remove(),console.log("Included file: "+l)}catch(e){o?.remove(),console.log("Could not include file: "+l,e);continue}}}else{if(document.querySelectorAll("include").length>0){var e=document.createElement("div");e.id="error",e.textContent="Web server exports must be hosted on an http / web server to be viewed correctly.",e.style.position="fixed",e.style.top="50%",e.style.left="50%",e.style.transform="translate(-50%, -50%)",e.style.fontSize="1.5em",e.style.fontWeight="bold",e.style.textAlign="center",document.body.appendChild(e),document.querySelector(".document-container")?.classList.remove("hide")}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script"))),l=0;!function e(){let n=o[l];l++,n&&"true"!=n.getAttribute("loaded")||l<o.length&&e(),l<o.length?n.addEventListener("load",e):t()}()}</script><link rel="stylesheet" href="lib/styles/obsidian.css"><link rel="preload" href="lib/styles/other-plugins.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/other-plugins.css"></noscript><link rel="stylesheet" href="lib/styles/theme.css"><link rel="preload" href="lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="lib/styles/supported-plugins.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/supported-plugins.css"></noscript><link rel="preload" href="lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/main-styles.css"></noscript><link rel="preload" href="lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="lib/styles/snippets.css"></noscript></head><body class="publish css-settings-manager theme-light show-inline-title show-ribbon mk-readable-line mk-folder-lines mk-spaces-enabled mk-inline-context-enabled mk-flow-minimal background-settings-workplace-theme-light-custom-option background-settings-workplace-theme-dark-in-the-sky background-image-settings-switch toggle-nonoverlapping-bg background-image-settings-markdown-page-custom notebook-liked-markdown-page-grid-notebook-2 background-image-settings-command-palette-switch background-image-settings-command-palette-same-as-workplace toggle-bg-panel-page panel-page-bg-theme-light-wall panel-page-bg-theme-dark-plant layout-style-options-default clutter-free-headings bt-default-unordered-list default-ol-list-marker list-no-border bt-connected-indent-hover bt-colorful-connected-indent-hover folder-icons remove-arrow bt-toggle-colorful-folder folder-style-change-options-colorful-border folder-colorful-six table-width-100 tag-default admonition-bg-color-same style-options-for-admonition-plugin style-options-for-buttons-plugin dataview-list-style-pacman memos-banner-gradient thino-frosted-style thino-background-default quiet-outline-optimize code-theme-custom code-line-number whole-code-wrap"><script defer="">let theme=localStorage.getItem("theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");"dark"==theme?(document.body.classList.add("theme-dark"),document.body.classList.remove("theme-light")):(document.body.classList.add("theme-light"),document.body.classList.remove("theme-dark")),window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="webpage-container workspace"><div class="sidebar-left sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><label class="theme-toggle-container" for="theme_toggle"><input class="theme-toggle-input" type="checkbox" id="theme_toggle"><div class="toggle-background"></div></label></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content"><div class="search-input-container"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div class="search-input-clear-button" aria-label="Clear search"></div></div><include src="lib/html/file-tree.html"></include></div><script defer="">let ls = document.querySelector(".sidebar-left"); ls.classList.add("is-collapsed"); if (window.innerWidth > 768) ls.classList.remove("is-collapsed"); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div><div class="document-container markdown-reading-view hide"><div class="markdown-preview-view markdown-rendered allow-fold-headings allow-fold-lists is-readable-line-width"><style id="MJX-CHTML-styles">mjx-c.mjx-c1D43E.TEX-I::before { padding: 0.683em 0.889em 0px 0px; content: "K"; }
+mjx-c.mjx-c1D44A.TEX-I::before { padding: 0.683em 1.048em 0.022em 0px; content: "W"; }
+mjx-c.mjx-c1D70F.TEX-I::before { padding: 0.431em 0.517em 0.013em 0px; content: "τ"; }
+mjx-c.mjx-c394::before { padding: 0.716em 0.833em 0px 0px; content: "Δ"; }
+mjx-c.mjx-c1D446.TEX-I::before { padding: 0.705em 0.645em 0.022em 0px; content: "S"; }
+mjx-c.mjx-c1D450.TEX-I::before { padding: 0.442em 0.433em 0.011em 0px; content: "c"; }
+mjx-c.mjx-c25::before { padding: 0.75em 0.833em 0.056em 0px; content: "%"; }
+mjx-c.mjx-cB7::before { padding: 0.31em 0.278em 0px 0px; content: "⋅"; }
+.mjx-stretched mjx-c.mjx-c2013::before { content: "–"; }
+mjx-stretchy-h.mjx-c2013 mjx-ext mjx-c::before { content: "–"; padding: 0.285em 0px 0px; }
+mjx-c.mjx-c24::before { padding: 0.75em 0.5em 0.056em 0px; content: "$"; }
+mjx-c.mjx-c1D45D.TEX-I::before { padding: 0.442em 0.503em 0.194em 0px; content: "p"; }
+mjx-c.mjx-c39::before { padding: 0.666em 0.5em 0.022em 0px; content: "9"; }
+mjx-stretchy-v.mjx-c7B mjx-beg mjx-c::before { content: "⎧"; padding: 0.899em 0.889em 0.01em 0px; }
+mjx-stretchy-v.mjx-c7B mjx-ext mjx-c::before { content: "⎪"; width: 0.889em; }
+mjx-stretchy-v.mjx-c7B mjx-end mjx-c::before { content: "⎩"; padding: 0.01em 0.889em 0.899em 0px; }
+mjx-stretchy-v.mjx-c7B mjx-mid mjx-c::before { content: "⎨"; padding: 1.16em 0.889em 0.66em 0px; }
+mjx-stretchy-v.mjx-c7B > mjx-mid { margin-top: -0.91em; margin-bottom: -0.91em; }
+mjx-stretchy-v.mjx-c7B > mjx-end { margin-top: -0.909em; }
+mjx-stretchy-v.mjx-c7B > mjx-ext { height: 50%; border-top-width: 0.879em; border-bottom-width: 0.879em; }
+mjx-c.mjx-c1D463.TEX-I::before { padding: 0.443em 0.485em 0.011em 0px; content: "v"; }
+mjx-c.mjx-c1D443.TEX-I::before { padding: 0.683em 0.751em 0px 0px; content: "P"; }
+mjx-c.mjx-c1D448.TEX-I::before { padding: 0.683em 0.767em 0.022em 0px; content: "U"; }
+mjx-c.mjx-c1D447.TEX-I::before { padding: 0.677em 0.704em 0px 0px; content: "T"; }
+mjx-c.mjx-c2032::before { padding: 0.56em 0.275em 0px 0px; content: "′"; }
+mjx-c.mjx-c22C5::before { padding: 0.31em 0.278em 0px 0px; content: "⋅"; }
+mjx-c.mjx-c20D7.TEX-V::before { padding: 0.714em 0.5em 0px 0px; content: "→"; }
+mjx-c.mjx-c1D435.TEX-I::before { padding: 0.683em 0.759em 0px 0px; content: "B"; }
+mjx-c.mjx-c1D458.TEX-I::before { padding: 0.694em 0.521em 0.011em 0px; content: "k"; }
+mjx-c.mjx-c1D439.TEX-I::before { padding: 0.68em 0.749em 0px 0px; content: "F"; }
+mjx-c.mjx-c3A::before { padding: 0.43em 0.278em 0px 0px; content: ":"; }
+mjx-c.mjx-c2033::before { padding: 0.56em 0.55em 0px 0px; content: "′′"; }
+mjx-c.mjx-cAC::before { padding: 0.356em 0.667em 0px 0px; content: "¬"; }
+mjx-c.mjx-c2227::before { padding: 0.598em 0.667em 0.022em 0px; content: "∧"; }
+mjx-c.mjx-c2228::before { padding: 0.598em 0.667em 0.022em 0px; content: "∨"; }
+mjx-c.mjx-c2295::before { padding: 0.583em 0.778em 0.083em 0px; content: "⊕"; }
+mjx-munderover { display: inline-block; text-align: left; }
+mjx-munderover:not([limits="false"]) { padding-top: 0.1em; }
+mjx-munderover:not([limits="false"]) > * { display: block; }
+mjx-msubsup { display: inline-block; text-align: left; }
+mjx-script { display: inline-block; padding-right: 0.05em; padding-left: 0.033em; }
+mjx-script > mjx-spacer { display: block; }
+mjx-mover { display: inline-block; text-align: left; }
+mjx-mover:not([limits="false"]) { padding-top: 0.1em; }
+mjx-mover:not([limits="false"]) > * { display: block; text-align: left; }
+mjx-c.mjx-c1D449.TEX-I::before { padding: 0.683em 0.769em 0.022em 0px; content: "V"; }
+mjx-c.mjx-c1D466.TEX-I::before { padding: 0.442em 0.49em 0.205em 0px; content: "y"; }
+mjx-c.mjx-c1D451.TEX-I::before { padding: 0.694em 0.52em 0.01em 0px; content: "d"; }
+mjx-c.mjx-c2211.TEX-S2::before { padding: 0.95em 1.444em 0.45em 0px; content: "∑"; }
+mjx-c.mjx-c35::before { padding: 0.666em 0.5em 0.022em 0px; content: "5"; }
+mjx-c.mjx-c1D440.TEX-I::before { padding: 0.683em 1.051em 0px 0px; content: "M"; }
+mjx-c.mjx-c1D438.TEX-I::before { padding: 0.68em 0.764em 0px 0px; content: "E"; }
+mjx-c.mjx-c3C::before { padding: 0.54em 0.778em 0.04em 0px; content: "<"; }
+mjx-c.mjx-c1D462.TEX-I::before { padding: 0.442em 0.572em 0.011em 0px; content: "u"; }
+mjx-c.mjx-c5E::before { padding: 0.694em 0.5em 0px 0px; content: "^"; }
+mjx-c.mjx-c7C::before { padding: 0.75em 0.278em 0.249em 0px; content: "|"; }
+mjx-c.mjx-c1D43C.TEX-I::before { padding: 0.683em 0.504em 0px 0px; content: "I"; }
+mjx-c.mjx-c1D445.TEX-I::before { padding: 0.683em 0.759em 0.021em 0px; content: "R"; }
+mjx-c.mjx-c26::before { padding: 0.716em 0.778em 0.022em 0px; content: "&"; }
+mjx-c.mjx-c1D457.TEX-I::before { padding: 0.661em 0.412em 0.204em 0px; content: "j"; }
+mjx-c.mjx-c2217::before { padding: 0.465em 0.5em 0px 0px; content: "∗"; }
+mjx-c.mjx-c1D434.TEX-I::before { padding: 0.716em 0.75em 0px 0px; content: "A"; }
+mjx-c.mjx-c1D436.TEX-I::before { padding: 0.705em 0.76em 0.022em 0px; content: "C"; }
+mjx-c.mjx-c1D45A.TEX-I::before { padding: 0.442em 0.878em 0.011em 0px; content: "m"; }
+mjx-mtable { display: inline-block; text-align: center; vertical-align: 0.25em; position: relative; box-sizing: border-box; border-spacing: 0px; border-collapse: collapse; }
+mjx-mstyle[size="s"] mjx-mtable { vertical-align: 0.354em; }
+mjx-labels { position: absolute; left: 0px; top: 0px; }
+mjx-table { display: inline-block; vertical-align: -0.5ex; box-sizing: border-box; }
+mjx-table > mjx-itable { vertical-align: middle; text-align: left; box-sizing: border-box; }
+mjx-labels > mjx-itable { position: absolute; top: 0px; }
+mjx-mtable[justify="left"] { text-align: left; }
+mjx-mtable[justify="right"] { text-align: right; }
+mjx-mtable[justify="left"][side="left"] { padding-right: 0px !important; }
+mjx-mtable[justify="left"][side="right"] { padding-left: 0px !important; }
+mjx-mtable[justify="right"][side="left"] { padding-right: 0px !important; }
+mjx-mtable[justify="right"][side="right"] { padding-left: 0px !important; }
+mjx-mtable[align] { vertical-align: baseline; }
+mjx-mtable[align="top"] > mjx-table { vertical-align: top; }
+mjx-mtable[align="bottom"] > mjx-table { vertical-align: bottom; }
+mjx-mtable[side="right"] mjx-labels { min-width: 100%; }
+mjx-mtr { display: table-row; text-align: left; }
+mjx-mtr[rowalign="top"] > mjx-mtd { vertical-align: top; }
+mjx-mtr[rowalign="center"] > mjx-mtd { vertical-align: middle; }
+mjx-mtr[rowalign="bottom"] > mjx-mtd { vertical-align: bottom; }
+mjx-mtr[rowalign="baseline"] > mjx-mtd { vertical-align: baseline; }
+mjx-mtr[rowalign="axis"] > mjx-mtd { vertical-align: 0.25em; }
+mjx-mtd { display: table-cell; text-align: center; padding: 0.215em 0.4em; }
+mjx-mtd:first-child { padding-left: 0px; }
+mjx-mtd:last-child { padding-right: 0px; }
+mjx-mtable > * > mjx-itable > :first-child > mjx-mtd { padding-top: 0px; }
+mjx-mtable > * > mjx-itable > :last-child > mjx-mtd { padding-bottom: 0px; }
+mjx-tstrut { display: inline-block; height: 1em; vertical-align: -0.25em; }
+mjx-labels[align="left"] > mjx-mtr > mjx-mtd { text-align: left; }
+mjx-labels[align="right"] > mjx-mtr > mjx-mtd { text-align: right; }
+mjx-mtd[extra] { padding: 0px; }
+mjx-mtd[rowalign="top"] { vertical-align: top; }
+mjx-mtd[rowalign="center"] { vertical-align: middle; }
+mjx-mtd[rowalign="bottom"] { vertical-align: bottom; }
+mjx-mtd[rowalign="baseline"] { vertical-align: baseline; }
+mjx-mtd[rowalign="axis"] { vertical-align: 0.25em; }
+mjx-c.mjx-c36::before { padding: 0.666em 0.5em 0.022em 0px; content: "6"; }
+mjx-c.mjx-c1D456.TEX-I::before { padding: 0.661em 0.345em 0.011em 0px; content: "i"; }
+mjx-c.mjx-c1D453.TEX-I::before { padding: 0.705em 0.55em 0.205em 0px; content: "f"; }
+mjx-c.mjx-c1D437.TEX-I::before { padding: 0.683em 0.828em 0px 0px; content: "D"; }
+mjx-c.mjx-c2F::before { padding: 0.75em 0.5em 0.25em 0px; content: "/"; }
+mjx-c.mjx-c2C::before { padding: 0.121em 0.278em 0.194em 0px; content: ","; }
+mjx-c.mjx-c1D45F.TEX-I::before { padding: 0.442em 0.451em 0.011em 0px; content: "r"; }
+mjx-c.mjx-c3E::before { padding: 0.54em 0.778em 0.04em 0px; content: ">"; }
+mjx-c.mjx-c1D464.TEX-I::before { padding: 0.443em 0.716em 0.011em 0px; content: "w"; }
+mjx-c.mjx-c1D461.TEX-I::before { padding: 0.626em 0.361em 0.011em 0px; content: "t"; }
+mjx-c.mjx-c210E.TEX-I::before { padding: 0.694em 0.576em 0.011em 0px; content: "h"; }
+mjx-c.mjx-c1D452.TEX-I::before { padding: 0.442em 0.466em 0.011em 0px; content: "e"; }
+mjx-c.mjx-c2248::before { padding: 0.483em 0.778em 0px 0px; content: "≈"; }
+mjx-c.mjx-c37::before { padding: 0.676em 0.5em 0.022em 0px; content: "7"; }
+mjx-c.mjx-c1D460.TEX-I::before { padding: 0.442em 0.469em 0.01em 0px; content: "s"; }
+mjx-c.mjx-c1D467.TEX-I::before { padding: 0.442em 0.465em 0.011em 0px; content: "z"; }
+mjx-c.mjx-c21::before { padding: 0.716em 0.278em 0px 0px; content: "!"; }
+mjx-c.mjx-c7B.TEX-S3::before { padding: 1.45em 0.75em 0.949em 0px; content: "{"; }
+mjx-c.mjx-c1D43F.TEX-I::before { padding: 0.683em 0.681em 0px 0px; content: "L"; }
+mjx-c.mjx-c2265::before { padding: 0.636em 0.778em 0.138em 0px; content: "≥"; }
+mjx-c.mjx-c2264::before { padding: 0.636em 0.778em 0.138em 0px; content: "≤"; }
+mjx-c.mjx-c30::before { padding: 0.666em 0.5em 0.022em 0px; content: "0"; }
+mjx-c.mjx-c1D44F.TEX-I::before { padding: 0.694em 0.429em 0.011em 0px; content: "b"; }
+mjx-c.mjx-c33::before { padding: 0.665em 0.5em 0.022em 0px; content: "3"; }
+mjx-c.mjx-c398::before { padding: 0.705em 0.778em 0.022em 0px; content: "Θ"; }
+mjx-c.mjx-c1D442.TEX-I::before { padding: 0.704em 0.763em 0.022em 0px; content: "O"; }
+mjx-c.mjx-c3A9::before { padding: 0.704em 0.722em 0px 0px; content: "Ω"; }
+mjx-msub { display: inline-block; text-align: left; }
+mjx-c.mjx-c1D459.TEX-I::before { padding: 0.694em 0.298em 0.011em 0px; content: "l"; }
+mjx-c.mjx-c1D45C.TEX-I::before { padding: 0.441em 0.485em 0.011em 0px; content: "o"; }
+mjx-c.mjx-c1D454.TEX-I::before { padding: 0.442em 0.477em 0.205em 0px; content: "g"; }
+mjx-c.mjx-c1D441.TEX-I::before { padding: 0.683em 0.888em 0px 0px; content: "N"; }
+mjx-container[jax="CHTML"] { line-height: 0; }
+mjx-container [space="1"] { margin-left: 0.111em; }
+mjx-container [space="2"] { margin-left: 0.167em; }
+mjx-container [space="3"] { margin-left: 0.222em; }
+mjx-container [space="4"] { margin-left: 0.278em; }
+mjx-container [space="5"] { margin-left: 0.333em; }
+mjx-container [rspace="1"] { margin-right: 0.111em; }
+mjx-container [rspace="2"] { margin-right: 0.167em; }
+mjx-container [rspace="3"] { margin-right: 0.222em; }
+mjx-container [rspace="4"] { margin-right: 0.278em; }
+mjx-container [rspace="5"] { margin-right: 0.333em; }
+mjx-container [size="s"] { font-size: 70.7%; }
+mjx-container [size="ss"] { font-size: 50%; }
+mjx-container [size="Tn"] { font-size: 60%; }
+mjx-container [size="sm"] { font-size: 85%; }
+mjx-container [size="lg"] { font-size: 120%; }
+mjx-container [size="Lg"] { font-size: 144%; }
+mjx-container [size="LG"] { font-size: 173%; }
+mjx-container [size="hg"] { font-size: 207%; }
+mjx-container [size="HG"] { font-size: 249%; }
+mjx-container [width="full"] { width: 100%; }
+mjx-box { display: inline-block; }
+mjx-block { display: block; }
+mjx-itable { display: inline-table; }
+mjx-row { display: table-row; }
+mjx-row > * { display: table-cell; }
+mjx-mtext { display: inline-block; }
+mjx-mstyle { display: inline-block; }
+mjx-merror { display: inline-block; color: red; background-color: yellow; }
+mjx-mphantom { visibility: hidden; }
+mjx-assistive-mml { top: 0px; left: 0px; clip: rect(1px, 1px, 1px, 1px); user-select: none; position: absolute !important; padding: 1px 0px 0px !important; border: 0px !important; display: block !important; width: auto !important; overflow: hidden !important; }
+mjx-assistive-mml[display="block"] { width: 100% !important; }
+mjx-math { display: inline-block; text-align: left; line-height: 0; text-indent: 0px; font-style: normal; font-weight: normal; font-size: 100%; letter-spacing: normal; border-collapse: collapse; overflow-wrap: normal; word-spacing: normal; white-space: nowrap; direction: ltr; padding: 1px 0px; }
+mjx-container[jax="CHTML"][display="true"] { display: block; text-align: center; margin: 1em 0px; }
+mjx-container[jax="CHTML"][display="true"][width="full"] { display: flex; }
+mjx-container[jax="CHTML"][display="true"] mjx-math { padding: 0px; }
+mjx-container[jax="CHTML"][justify="left"] { text-align: left; }
+mjx-container[jax="CHTML"][justify="right"] { text-align: right; }
+mjx-mi { display: inline-block; text-align: left; }
+mjx-c { display: inline-block; }
+mjx-utext { display: inline-block; padding: 0.75em 0px 0.2em; }
+mjx-mo { display: inline-block; text-align: left; }
+mjx-stretchy-h { display: inline-table; width: 100%; }
+mjx-stretchy-h > * { display: table-cell; width: 0px; }
+mjx-stretchy-h > * > mjx-c { display: inline-block; transform: scaleX(1); }
+mjx-stretchy-h > * > mjx-c::before { display: inline-block; width: initial; }
+mjx-stretchy-h > mjx-ext { overflow: clip visible; width: 100%; }
+mjx-stretchy-h > mjx-ext > mjx-c::before { transform: scaleX(500); }
+mjx-stretchy-h > mjx-ext > mjx-c { width: 0px; }
+mjx-stretchy-h > mjx-beg > mjx-c { margin-right: -0.1em; }
+mjx-stretchy-h > mjx-end > mjx-c { margin-left: -0.1em; }
+mjx-stretchy-v { display: inline-block; }
+mjx-stretchy-v > * { display: block; }
+mjx-stretchy-v > mjx-beg { height: 0px; }
+mjx-stretchy-v > mjx-end > mjx-c { display: block; }
+mjx-stretchy-v > * > mjx-c { transform: scaleY(1); transform-origin: left center; overflow: hidden; }
+mjx-stretchy-v > mjx-ext { display: block; height: 100%; box-sizing: border-box; border: 0px solid transparent; overflow: visible clip; }
+mjx-stretchy-v > mjx-ext > mjx-c::before { width: initial; box-sizing: border-box; }
+mjx-stretchy-v > mjx-ext > mjx-c { transform: scaleY(500) translateY(0.075em); overflow: visible; }
+mjx-mark { display: inline-block; height: 0px; }
+mjx-texatom { display: inline-block; text-align: left; }
+mjx-munder { display: inline-block; text-align: left; }
+mjx-over { text-align: left; }
+mjx-munder:not([limits="false"]) { display: inline-table; }
+mjx-munder > mjx-row { text-align: left; }
+mjx-under { padding-bottom: 0.1em; }
+mjx-mn { display: inline-block; text-align: left; }
+mjx-mfrac { display: inline-block; text-align: left; }
+mjx-frac { display: inline-block; vertical-align: 0.17em; padding: 0px 0.22em; }
+mjx-frac[type="d"] { vertical-align: 0.04em; }
+mjx-frac[delims] { padding: 0px 0.1em; }
+mjx-frac[atop] { padding: 0px 0.12em; }
+mjx-frac[atop][delims] { padding: 0px; }
+mjx-dtable { display: inline-table; width: 100%; }
+mjx-dtable > * { font-size: 2000%; }
+mjx-dbox { display: block; font-size: 5%; }
+mjx-num { display: block; text-align: center; }
+mjx-den { display: block; text-align: center; }
+mjx-mfrac[bevelled] > mjx-num { display: inline-block; }
+mjx-mfrac[bevelled] > mjx-den { display: inline-block; }
+mjx-den[align="right"], mjx-num[align="right"] { text-align: right; }
+mjx-den[align="left"], mjx-num[align="left"] { text-align: left; }
+mjx-nstrut { display: inline-block; height: 0.054em; width: 0px; vertical-align: -0.054em; }
+mjx-nstrut[type="d"] { height: 0.217em; vertical-align: -0.217em; }
+mjx-dstrut { display: inline-block; height: 0.505em; width: 0px; }
+mjx-dstrut[type="d"] { height: 0.726em; }
+mjx-line { display: block; box-sizing: border-box; min-height: 1px; height: 0.06em; border-top: 0.06em solid; margin: 0.06em -0.1em; overflow: hidden; }
+mjx-line[type="d"] { margin: 0.18em -0.1em; }
+mjx-mrow { display: inline-block; text-align: left; }
+mjx-msup { display: inline-block; text-align: left; }
+mjx-c::before { display: block; width: 0px; }
+.MJX-TEX { font-family: MJXZERO, MJXTEX; }
+.TEX-B { font-family: MJXZERO, MJXTEX-B; }
+.TEX-I { font-family: MJXZERO, MJXTEX-I; }
+.TEX-MI { font-family: MJXZERO, MJXTEX-MI; }
+.TEX-BI { font-family: MJXZERO, MJXTEX-BI; }
+.TEX-S1 { font-family: MJXZERO, MJXTEX-S1; }
+.TEX-S2 { font-family: MJXZERO, MJXTEX-S2; }
+.TEX-S3 { font-family: MJXZERO, MJXTEX-S3; }
+.TEX-S4 { font-family: MJXZERO, MJXTEX-S4; }
+.TEX-A { font-family: MJXZERO, MJXTEX-A; }
+.TEX-C { font-family: MJXZERO, MJXTEX-C; }
+.TEX-CB { font-family: MJXZERO, MJXTEX-CB; }
+.TEX-FR { font-family: MJXZERO, MJXTEX-FR; }
+.TEX-FRB { font-family: MJXZERO, MJXTEX-FRB; }
+.TEX-SS { font-family: MJXZERO, MJXTEX-SS; }
+.TEX-SSB { font-family: MJXZERO, MJXTEX-SSB; }
+.TEX-SSI { font-family: MJXZERO, MJXTEX-SSI; }
+.TEX-SC { font-family: MJXZERO, MJXTEX-SC; }
+.TEX-T { font-family: MJXZERO, MJXTEX-T; }
+.TEX-V { font-family: MJXZERO, MJXTEX-V; }
+.TEX-VB { font-family: MJXZERO, MJXTEX-VB; }
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c { font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A !important; }
+@font-face { font-family: MJXZERO; src: url("lib/fonts/mathjax_zero.woff") format("woff"); }
+@font-face { font-family: MJXTEX; src: url("lib/fonts/mathjax_main-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-B; src: url("lib/fonts/mathjax_main-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-I; src: url("lib/fonts/mathjax_math-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-MI; src: url("lib/fonts/mathjax_main-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-BI; src: url("lib/fonts/mathjax_math-bolditalic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S1; src: url("lib/fonts/mathjax_size1-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S2; src: url("lib/fonts/mathjax_size2-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S3; src: url("lib/fonts/mathjax_size3-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-S4; src: url("lib/fonts/mathjax_size4-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-A; src: url("lib/fonts/mathjax_ams-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-C; src: url("lib/fonts/mathjax_calligraphic-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-CB; src: url("lib/fonts/mathjax_calligraphic-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-FR; src: url("lib/fonts/mathjax_fraktur-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-FRB; src: url("lib/fonts/mathjax_fraktur-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SS; src: url("lib/fonts/mathjax_sansserif-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SSB; src: url("lib/fonts/mathjax_sansserif-bold.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SSI; src: url("lib/fonts/mathjax_sansserif-italic.woff") format("woff"); }
+@font-face { font-family: MJXTEX-SC; src: url("lib/fonts/mathjax_script-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-T; src: url("lib/fonts/mathjax_typewriter-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-V; src: url("lib/fonts/mathjax_vector-regular.woff") format("woff"); }
+@font-face { font-family: MJXTEX-VB; src: url("lib/fonts/mathjax_vector-bold.woff") format("woff"); }
+mjx-c.mjx-c1D45B.TEX-I::before { padding: 0.442em 0.6em 0.011em 0px; content: "n"; }
+mjx-c.mjx-c2192::before { padding: 0.511em 1em 0.011em 0px; content: "→"; }
+mjx-c.mjx-c221E::before { padding: 0.442em 1em 0.011em 0px; content: "∞"; }
+mjx-c.mjx-c6C::before { padding: 0.694em 0.278em 0px 0px; content: "l"; }
+mjx-c.mjx-c69::before { padding: 0.669em 0.278em 0px 0px; content: "i"; }
+mjx-c.mjx-c6D::before { padding: 0.442em 0.833em 0px 0px; content: "m"; }
+mjx-c.mjx-c1D44E.TEX-I::before { padding: 0.441em 0.529em 0.01em 0px; content: "a"; }
+mjx-c.mjx-c2B::before { padding: 0.583em 0.778em 0.082em 0px; content: "+"; }
+mjx-c.mjx-c28::before { padding: 0.75em 0.389em 0.25em 0px; content: "("; }
+mjx-c.mjx-c31::before { padding: 0.666em 0.5em 0px 0px; content: "1"; }
+mjx-c.mjx-c29::before { padding: 0.75em 0.389em 0.25em 0px; content: ")"; }
+mjx-c.mjx-c2E::before { padding: 0.12em 0.278em 0px 0px; content: "."; }
+mjx-c.mjx-c3D::before { padding: 0.583em 0.778em 0.082em 0px; content: "="; }
+mjx-c.mjx-c5B::before { padding: 0.75em 0.278em 0.25em 0px; content: "["; }
+mjx-c.mjx-c5D::before { padding: 0.75em 0.278em 0.25em 0px; content: "]"; }
+mjx-c.mjx-cD7::before { padding: 0.491em 0.778em 0px 0px; content: "×"; }
+mjx-c.mjx-c32::before { padding: 0.666em 0.5em 0px 0px; content: "2"; }
+mjx-c.mjx-c34::before { padding: 0.677em 0.5em 0px 0px; content: "4"; }
+mjx-c.mjx-c38::before { padding: 0.666em 0.5em 0.022em 0px; content: "8"; }
+mjx-c.mjx-c2026::before { padding: 0.12em 1.172em 0px 0px; content: "…"; }
+mjx-c.mjx-c1D465.TEX-I::before { padding: 0.442em 0.572em 0.011em 0px; content: "x"; }
+mjx-c.mjx-c2212::before { padding: 0.583em 0.778em 0.082em 0px; content: "−"; }
+</style><pre class="frontmatter language-yaml" tabindex="0" style="display: none;"><code class="language-yaml is-loaded"><span class="token key atrule">dg-publish</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre><div class="markdown-preview-sizer markdown-preview-section"><h1 class="page-title heading inline-title" id="Project1 Buffer Pool"><p dir="auto">Project1 Buffer Pool</p></h1><div class="el-p"><p dir="auto">Project1 网址  <a data-tooltip-position="top" aria-label="https://15445.courses.cs.cmu.edu/fall2023/project1/" rel="noopener nofollow" class="external-link" href="https://15445.courses.cs.cmu.edu/fall2023/project1/" target="_blank">15445.courses.cs.cmu.edu.fall2023.project1</a><br>
+代码一定要遵守google C++ 规范 <a rel="noopener nofollow" class="external-link" href="https://google.github.io/styleguide/cppguide.html#General_Naming_Rules" target="_blank">https://google.github.io/styleguide/cppguide.html#General_Naming_Rules</a><br>
+提交方法及代码规范见<a data-href="环境配置 下载代码  提交项目 代码规范" href="database-systems/cmu-15-445：database-systems/环境配置-下载代码-提交项目-代码规范.html" class="internal-link" target="_self" rel="noopener nofollow">环境配置 下载代码  提交项目 代码规范</a></p></div><div class="el-h3 heading-wrapper"><h3 data-heading="Task 1 - LRU-K Replacement Policy" dir="auto" class="heading" id="Task_1_-_LRU-K_Replacement_Policy"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Task 1 - LRU-K Replacement Policy</h3><div class="heading-children"><div class="el-h4 heading-wrapper"><h4 data-heading="Approach1: k-distance &amp;&amp; timestamp" dir="auto" class="heading" id="Approach1:_k-distance_&amp;&amp;_timestamp"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Approach1: k-distance &amp;&amp; timestamp</h4><div class="heading-children"><div class="el-p"><p dir="auto">首先需要明确什么是LRU算法   LRU-K算法<br>
+然后需要明确源代码给的LRUKReplacer 和 LRUKNode 各个属性代表了什么</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"> <span class="token keyword">class</span> <span class="token class-name">LRUKReplacer</span>
+ <span class="token keyword">private</span><span class="token operator">:</span>  
+  <span class="token comment">// TODO(student): implement me! You can replace these member variables as you like.  </span>
+  <span class="token comment">// Remove maybe_unused if you start using them.  </span>
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>unordered_map<span class="token operator">&lt;</span>frame_id_t<span class="token punctuation">,</span> LRUKNode<span class="token operator">&gt;</span> node_store_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t current_timestamp_<span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t curr_size_<span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t replacer_size_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t k_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>mutex latch_<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto"><code>node_store_</code><br>
+类型为<code>std::unordered_map&lt;frame_id_t, LRUKNode&gt;</code>，用于存储每个帧（<code>frame_id</code>）对应的<code>LRUKNode</code>节点。每个节点记录该帧的历史访问时间戳（用于计算k-distance）和是否可被替换（evictable）的状态</li>
+<li data-line="2" dir="auto"><code>current_timestamp_</code><br>
+类型为<code>size_t</code>，表示全局递增的时间戳。每次页面被访问时，时间戳会递增，用于记录访问发生的顺序</li>
+<li data-line="4" dir="auto"><strong><code>curr_size_</code></strong><br>
+类型为<code>size_t</code>，表示当前<code>LRUKReplacer</code>中可被替换（evictable）的帧数量。只有被标记为可替换的帧才会被计入此值</li>
+<li data-line="6" dir="auto"><strong><code>replacer_size_</code></strong><br>
+类型为<code>size_t</code>，表示<code>LRUKReplacer</code>的最大容量（即缓冲池的总帧数）。该值与缓冲池大小一致</li>
+<li data-line="8" dir="auto"><strong><code>k_</code></strong><br>
+类型为<code>size_t</code>，表示LRU-K算法中的参数K。它决定了计算k-distance时需要考虑的最近访问次数（例如，K=2表示记录最近两次访问时间）</li>
+<li data-line="10" dir="auto"><strong><code>latch_</code></strong><br>
+类型为<code>std::mutex</code>，用于多线程环境下的互斥锁，保证对<code>LRUKReplacer</code>的操作是线程安全的</li>
+</ul></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">class</span> <span class="token class-name">LRUKNode</span> <span class="token punctuation">{</span>  
+ <span class="token keyword">private</span><span class="token operator">:</span>  
+  <span class="token comment">/** History of last seen K timestamps of this page. Least recent timestamp stored in front. */</span>  
+  <span class="token comment">// Remove maybe_unused if you start using them. Feel free to change the member variables as you want.  </span>
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>size_t<span class="token operator">&gt;</span> history_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t k_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> frame_id_t fid_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token keyword">bool</span> is_evictable_<span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">以下是&nbsp;<code>LRUKNode</code>&nbsp;类中各个成员属性的含义及其在&nbsp;<strong>LRU-K 替换策略</strong>中的作用：<br>
+1.&nbsp;<strong><code>history_</code></strong><br>
+<strong>类型</strong>:&nbsp;<code>std::list&lt;size_t&gt;</code> <strong>作用</strong>:  存储该帧（<code>frame_id</code>）<strong>最近&nbsp;<code>K</code>&nbsp;次访问的时间戳</strong>，按时间顺序排列： <strong>最旧的访问时间戳</strong>在列表的<strong>前端</strong>（<code>front()</code>）。<strong>最新的访问时间戳</strong>在列表的<strong>后端</strong>（<code>back()</code>）。<strong>LRU-K 关键逻辑</strong>: 当需要计算帧的&nbsp;<code>k-distance</code>（用于淘汰决策）时，若访问次数&nbsp;<code>&lt; K</code>，<code>k-distance</code>&nbsp;设为&nbsp;<code>+∞</code>；否则取&nbsp;<code>history_</code>&nbsp;前端的倒数第&nbsp;<code>K</code>&nbsp;个时间戳（即&nbsp;<code>history_.front()</code>）。 每次访问时，新的时间戳会被插入到&nbsp;<code>history_</code>&nbsp;的末尾，若长度超过&nbsp;<code>K</code>，则删除最旧的时间戳（即&nbsp;<code>history_.pop_front()</code>）。<br>
+2.&nbsp;<strong><code>k_</code></strong><br>
+<strong>类型</strong>:&nbsp;<code>size_t</code>  <strong>作用</strong>:  表示该节点对应的&nbsp;<strong>LRU-K 算法的参数&nbsp;<code>K</code></strong>，即需要跟踪的访问次数。 <strong>意义</strong>:- 控制&nbsp;<code>history_</code>&nbsp;的最大长度（最多保留&nbsp;<code>K</code>&nbsp;个时间戳）。- 在插入新时间戳时，若&nbsp;<code>history_.size() == K</code>，需删除最旧的时间戳以维持长度。<br>
+3.&nbsp;<strong><code>fid_</code></strong><br>
+<strong>类型</strong>:&nbsp;<code>frame_id_t</code>  <strong>作用</strong>:  存储该节点对应的<strong>缓冲池帧的唯一标识符</strong>（即帧的 ID）。<strong>意义</strong>:在替换时，通过&nbsp;<code>fid_</code>&nbsp;可以快速定位到具体的帧进行淘汰。<br>
+4.&nbsp;<strong><code>is_evictable_</code></strong><br>
+<strong>类型</strong>:&nbsp;<code>bool</code>（默认&nbsp;<code>false</code>） <strong>作用</strong>:  标记该帧<strong>是否可被替换</strong>（evictable）。<strong>关键逻辑</strong>:- 只有&nbsp;<code>is_evictable_ == true</code>&nbsp;的帧才会参与淘汰决策。- 若一个帧被“固定”（例如正在被事务使用），则设为&nbsp;<code>false</code>，避免被意外替换。</p></div><div class="el-p"><p dir="auto">整体示意图<br>
+这是我做完了之后整理 画的示意图<br>
+<span alt="project1 task1 LRUK1(1).png" src="project1 task1 LRUK1(1).png" class="internal-embed media-embed image-embed is-loaded"><img alt="project1 task1 LRUK1(1).png" src="lib/media/project1-task1-lruk1(1).png"></span><br>
+这里用的是面向对象的思想  LRUKRepalcer干的其实只是计算k-distance决定替换哪个page的工作---不考虑为何需要替换 不考虑合适替换   这都是buffer pool该干的事情<br>
+这里的思想是 在LRUKReplace类中维护了LRUKNode  LRUKNode 存着frameID  其实就是pageID  代表哪个page  或者说是一个指针 能转到哪个page<br>
+通过维护时间戳timestamp来计算k-distance<br>
+当page被调用  就在对应的LRUKNode中存储此时的时间戳timestamp  然后timestamp加1<br>
+这里维护的<code>history_</code>只存储k个时间戳  因为我们算法淘汰的是淘汰 k-distance&nbsp;最大的页面（即倒数第 K 次访问时间最久远的页面），也就是history的front的timestamp与现在timestamp距离最大的那个page   -- 当然如果不足k 次  k-distance为无穷大<br>
+同级处理  若多个页面的k-distance相同   淘汰访问最早的页面<br>
+Task1 要求</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto"><code>Evict(frame_id_t* frame_id)</code>&nbsp;: Evict the frame with largest backward k-distance compared to all other&nbsp;<strong>evictable</strong>&nbsp;frames being tracked by the&nbsp;<code>Replacer</code>. Store the frame id in the output parameter and return&nbsp;<code>True</code>. If there are no evictable frames return&nbsp;<code>False</code>.</li>
+<li data-line="1" dir="auto"><code>RecordAccess(frame_id_t frame_id)</code>&nbsp;: Record that given frame id is accessed at current timestamp. This method should be called after a page is pinned in the&nbsp;<code>BufferPoolManager</code>.</li>
+<li data-line="2" dir="auto"><code>Remove(frame_id_t frame_id)</code>&nbsp;: Clear all access history associated with a frame. This method should be called only when a page is deleted in the&nbsp;<code>BufferPoolManager</code>.</li>
+<li data-line="3" dir="auto"><code>SetEvictable(frame_id_t frame_id, bool set_evictable)</code>&nbsp;: This method controls whether a frame is evictable or not. It also controls&nbsp;<code>LRUKReplacer</code>'s size. You'll know when to call this function when you implement the&nbsp;<code>BufferPoolManager</code>. To be specific, when pin count of a page reaches 0, its corresponding frame is marked evictable and replacer's size is incremented.</li>
+<li data-line="4" dir="auto"><code>Size()</code>&nbsp;: This method returns the number of evictable frames that are currently in the&nbsp;<code>LRUKReplacer</code>.</li>
+</ul></div><div class="el-p"><p dir="auto"><strong>Evict函数</strong><br>
+<span alt="Pasted image 20250223172320.png" src="Pasted image 20250223172320.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223172320.png" src="lib/media/pasted-image-20250223172320.png"></span></p></div><div class="el-p"><p dir="auto">分解任务：<br>
+<strong>frame with less than k historical references is given +inf as  its backward k-distance.</strong><br>
+获取最大的k-distance   如果访问记录 也就是node 的<code>history_</code>(<code>history_</code>记录所有时间戳--每加入一个page 时间戳+1)  如果<code>history_</code>的长度不足k 就需要设为+inf</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">auto</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">GetDistance</span><span class="token punctuation">(</span>LRUKNode <span class="token operator">&amp;</span>node<span class="token punctuation">)</span> <span class="token operator">-&gt;</span> size_t <span class="token punctuation">{</span>  
+  size_t distance<span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    distance <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token class-name">numeric_limits</span><span class="token operator">&lt;</span>size_t<span class="token operator">&gt;</span><span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>  
+    distance <span class="token operator">=</span> current_timestamp_ <span class="token operator">-</span> node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">return</span> distance<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>If multiple frames have inf backward k-distance, then evict frame with earliest timestamp based on LRU</strong><br>
+如果k-distance相同  就找最早一次访问</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span>k_distance <span class="token operator">&gt;</span> max_k_distance<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  evict_id <span class="token operator">=</span> node<span class="token punctuation">.</span>first<span class="token punctuation">;</span>  
+  max_k_distance <span class="token operator">=</span> k_distance<span class="token punctuation">;</span>  
+  earliest_timestamp <span class="token operator">=</span> lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>k_distance <span class="token operator">==</span> max_k_distance<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> earliest_timestamp<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    evict_id <span class="token operator">=</span> node<span class="token punctuation">.</span>first<span class="token punctuation">;</span>  
+    earliest_timestamp <span class="token operator">=</span> lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">auto</span> <span class="token class-name">LRUKNode</span><span class="token double-colon punctuation">::</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-&gt;</span> size_t <span class="token punctuation">{</span> <span class="token keyword">return</span> history_<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>Successful eviction of a frame should decrement the size of replacer and remove the frame's access history.</strong><br>
+成功驱逐后 应该干什么: 调整Replacer的size    清楚页面的所有记录<br>
+其实对应的就是LRUKReplacer的<code>curr_size_--</code> ，<code>node_store_</code>删除对应的frame id的记录</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded">node_store_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>evict_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>Store the frame id in the output parameter and return&nbsp;<code>True</code>. If there are no evictable frames return&nbsp;<code>False</code>.</strong><br>
+保存frame id   返回bool值</p></div><div class="el-p"><p dir="auto">Evit函数流程图<br>
+<span alt="projec1 task1 evict1 png.png" src="projec1 task1 evict1 png.png" class="internal-embed media-embed image-embed is-loaded" style="width: 450px; max-width: 100%;"><img alt="projec1 task1 evict1 png.png" src="lib/media/projec1-task1-evict1-png.png" style="width: 450px; max-width: 100%;"></span><br>
+整体代码</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">auto</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Evict</span><span class="token punctuation">(</span>frame_id_t <span class="token operator">*</span>frame_id<span class="token punctuation">)</span> <span class="token operator">-&gt;</span> <span class="token keyword">bool</span> <span class="token punctuation">{</span>  
+  <span class="token comment">// 上锁  </span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock_guard</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+  size_t max_k_distance <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>  
+  frame_id_t evict_id <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>  
+  size_t earliest_timestamp <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token class-name">numeric_limits</span><span class="token operator">&lt;</span>size_t<span class="token operator">&gt;</span><span class="token double-colon punctuation">::</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span> <span class="token operator">&amp;</span>node <span class="token operator">:</span> node_store_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    LRUKNode lruk_node <span class="token operator">=</span> node<span class="token punctuation">.</span>second<span class="token punctuation">;</span>  
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>lruk_node<span class="token punctuation">.</span><span class="token function">IsEvictable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token keyword">continue</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span>  
+  
+    size_t k_distance <span class="token operator">=</span> <span class="token function">GetDistance</span><span class="token punctuation">(</span>lruk_node<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>k_distance <span class="token operator">&gt;</span> max_k_distance<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      evict_id <span class="token operator">=</span> node<span class="token punctuation">.</span>first<span class="token punctuation">;</span>  
+      max_k_distance <span class="token operator">=</span> k_distance<span class="token punctuation">;</span>  
+      earliest_timestamp <span class="token operator">=</span> lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>k_distance <span class="token operator">==</span> max_k_distance<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> earliest_timestamp<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+        evict_id <span class="token operator">=</span> node<span class="token punctuation">.</span>first<span class="token punctuation">;</span>  
+        earliest_timestamp <span class="token operator">=</span> lruk_node<span class="token punctuation">.</span><span class="token function">GetEarliestTimestamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+      <span class="token punctuation">}</span>  
+    <span class="token punctuation">}</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>evict_id <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  <span class="token operator">*</span>frame_id <span class="token operator">=</span> evict_id<span class="token punctuation">;</span>  
+  node_store_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>evict_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>  
+  <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>RecordAccess函数</strong><br>
+<span alt="Pasted image 20250223200043.png" src="Pasted image 20250223200043.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223200043.png" src="lib/media/pasted-image-20250223200043.png"></span><br>
+分解任务：<br>
+<strong>create a new entry for access history if frame id has not been seen before.</strong><br>
+如果frameID 不在 我们创建一个新的entry  为的是能够access history<br>
+这就涉及到access的本质是什么？<br>
+是在对page或者说node 插入当前的时间戳</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span>node_store_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">==</span> node_store_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  node_store_<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">make_pair</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">,</span> <span class="token function">LRUKNode</span><span class="token punctuation">(</span>k_<span class="token punctuation">,</span> frame_id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>  
+  
+LRUKNode <span class="token operator">&amp;</span>node <span class="token operator">=</span> node_store_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+  
+node<span class="token punctuation">.</span><span class="token function">AddAccessTimestamp</span><span class="token punctuation">(</span>current_timestamp_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>If frame id is invaild (ie. larger than <code>replacer_size_</code>), throw an exception</strong><br>
+验证合法性</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">VaildFrameID</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>frame_id <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>size_t<span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">&gt;</span> replacer_size_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">invalid_argument</span><span class="token punctuation">(</span><span class="token string">"Invalid frame id"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>除此之外 应该考虑清楚access的本质是什么？</strong><br>
+我们本质上是对每个page维护了一个<code>history_</code>的list  我们是维护的时间戳来表示k<br>
+<strong>所以我的<code>history_</code>最好维护在size&lt;=k 所以涉及到 如果超出k怎么办？</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">pop_front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>在插入之后 要做 时间戳的更新</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded">current_timestamp_<span class="token operator">++</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">函数流程图<br>
+<span alt="Project1 Task1  RecordAccess png.png" src="Project1 Task1  RecordAccess png.png" class="internal-embed media-embed image-embed is-loaded" style="width: 400px; max-width: 100%;"><img alt="Project1 Task1  RecordAccess png.png" src="lib/media/project1-task1-recordaccess-png.png" style="width: 400px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">整体代码</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">RecordAccess</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> AccessType access_type<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock_guard</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token comment">// 检查合法性  </span>
+  <span class="token function">VaildFrameID</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>node_store_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">==</span> node_store_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    node_store_<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">make_pair</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">,</span> <span class="token function">LRUKNode</span><span class="token punctuation">(</span>k_<span class="token punctuation">,</span> frame_id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  LRUKNode <span class="token operator">&amp;</span>node <span class="token operator">=</span> node_store_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">;</span>  
+  
+  node<span class="token punctuation">.</span><span class="token function">AddAccessTimestamp</span><span class="token punctuation">(</span>current_timestamp_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    node<span class="token punctuation">.</span><span class="token function">GetHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">pop_front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  current_timestamp_<span class="token operator">++</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>SetEvictable 函数</strong><br>
+<span alt="Pasted image 20250223193619.png" src="Pasted image 20250223193619.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223193619.png" src="lib/media/pasted-image-20250223193619.png"></span></p></div><div class="el-p"><p dir="auto">分解任务：<br>
+<strong>If a frame was previously evictable and is to be set to non-evictable, then size shoud decrement. If a frame was previously non-evictable and is to be set to evictable, then size should increment.</strong><br>
+如果帧以前可移除  设置为不移除的时候 大小应递减<br>
+如果帧以前不可移除  设置为移除的时候  大小硬递增<br>
+<strong>如果相等呢？</strong>  不用管<br>
+这里指的是<code>curr_size_</code>  目前可被替换的数量</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span>prev_evictable <span class="token operator">==</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">return</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>  
+<span class="token keyword">if</span> <span class="token punctuation">(</span>prev_evictable <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>prev_evictable <span class="token operator">&amp;&amp;</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  curr_size_<span class="token operator">++</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>If frame id is invaild, throw an exception or about the process.</strong><br>
+判断frameID的合法性 与最大容量比<br>
+整体代码</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">SetEvictable</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">,</span> <span class="token keyword">bool</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock_guard</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token function">VaildFrameID</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token keyword">auto</span> it <span class="token operator">=</span> node_store_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">==</span> node_store_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  <span class="token keyword">bool</span> prev_evictable <span class="token operator">=</span> it<span class="token operator">-&gt;</span>second<span class="token punctuation">.</span><span class="token function">IsEvictable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>prev_evictable <span class="token operator">==</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>prev_evictable <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>prev_evictable <span class="token operator">&amp;&amp;</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    curr_size_<span class="token operator">++</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  it<span class="token operator">-&gt;</span>second<span class="token punctuation">.</span><span class="token function">SetEvictable</span><span class="token punctuation">(</span>set_evictable<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>remove函数</strong><br>
+<span alt="Pasted image 20250223213808.png" src="Pasted image 20250223213808.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223213808.png" src="lib/media/pasted-image-20250223213808.png"></span><br>
+Note that this is different from evicting a frame,   which always remove the frame with largest backward k-distance. This function removes specified frame id,  no matter what its backward k-distance is.<br>
+<strong>If Remove is called on a non-evictable frame, throw an exception or abort the process.</strong><br>
+如果non-evictable 抛异常</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>it<span class="token operator">-&gt;</span>second<span class="token punctuation">.</span><span class="token function">IsEvictable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">logic_error</span><span class="token punctuation">(</span><span class="token string">"Cannot remove non-evictable frame"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>If specified frame is not found, directly return from this function.</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">==</span> node_store_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">return</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">要想明白 删除的时候 都要干什么</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded">node_store_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">整体代码</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Remove</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock_guard</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token keyword">auto</span> it <span class="token operator">=</span> node_store_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">==</span> node_store_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>it<span class="token operator">-&gt;</span>second<span class="token punctuation">.</span><span class="token function">IsEvictable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">logic_error</span><span class="token punctuation">(</span><span class="token string">"Cannot remove non-evictable frame"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  node_store_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><span style="display: block; margin-block-start: var(--p-spacing); margin-block-end: var(--p-spacing);"><strong>Size 函数</strong><br>
+<span alt="Pasted image 20250223214459.png" src="Pasted image 20250223214459.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223214459.png" src="lib/media/pasted-image-20250223214459.png"></span><br>
+Size就很简单了  返回大小就行<br>
+提交至gradescope<br>
+<span alt="bae821a59ca5ab064f046c8fa2675c4.png" src="bae821a59ca5ab064f046c8fa2675c4.png" class="internal-embed media-embed image-embed is-loaded" style="width: 200px; max-width: 100%;"><img alt="bae821a59ca5ab064f046c8fa2675c4.png" src="lib/media/bae821a59ca5ab064f046c8fa2675c4.png" style="width: 200px; max-width: 100%;"></span><br>
+代码文件<br>
+<span alt="lru_k_replacer approach1 c.h" src="lru_k_replacer approach1 c.h" class="internal-embed file-embed mod-generic is-loaded"><div class="file-embed-title"><span class="file-embed-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></span> lru_k_replacer approach1 c.h</div></span><br>
+<span alt="lru_k_replacer approach1 cpp.cpp" src="lru_k_replacer approach1 cpp.cpp" class="internal-embed file-embed mod-generic is-loaded"><div class="file-embed-title"><span class="file-embed-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></span> lru_k_replacer approach1 cpp.cpp</div></span></span></div></div></div><div class="el-h4 heading-wrapper"><h4 data-heading="Approach2: history_list &amp;&amp; lru_list" dir="auto" class="heading" id="Approach2:_history_list_&amp;&amp;_lru_list"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Approach2: history_list &amp;&amp; lru_list</h4><div class="heading-children"><div class="el-p"><p dir="auto"><span alt="Pasted image 20250223214610.png" src="Pasted image 20250223214610.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250223214610.png" src="lib/media/pasted-image-20250223214610.png"></span><br>
+对于replacer给的成员变量中 说  可以自己替换member<br>
+我突然想起来可以用上课讲的MySQL那种形式  一种近似的LRUK算法  但是好像不用考虑K和timestamp  而是维护了两个链表或者说队列<br>
+<span alt="Pasted image 20250223214739.png" src="Pasted image 20250223214739.png" class="internal-embed media-embed image-embed is-loaded" style="width: 600px; max-width: 100%;"><img alt="Pasted image 20250223214739.png" src="lib/media/pasted-image-20250223214739.png" style="width: 600px; max-width: 100%;"></span><br>
+但是这种方法肯定会跟LRUK的算法不一样  MySQL采用的类LRUK方法只要是重新调用就进入 Young list</p></div><div class="el-p"><p dir="auto">但是也可以用这个思路  就是我们不用去维护timestamp  而是 去维护 一个lru list 和 history list就可以了   记录调用次数  当调用次数超过k的时候就移入lru list:</p></div><div class="el-p"><p dir="auto"><strong>LRU-K 替换策略，一句话总结就是永远优先踢掉没有达到 K 次访问的元素，否则对于已经达到 K 次访问的元素按照 LRU 踢出</strong><br>
+<a data-tooltip-position="top" aria-label="https://www.cs.cmu.edu/~natassa/courses/15-721/papers/p297-o_neil.pdf" rel="noopener nofollow" class="external-link" href="https://www.cs.cmu.edu/~natassa/courses/15-721/papers/p297-o_neil.pdf" target="_blank">p297-o_neil.pdf</a> 原论文给出了一个 Backward K-distance 的概念如下<br>
+<span alt="Pasted image 20250227082645.png" src="Pasted image 20250227082645.png" class="internal-embed media-embed image-embed is-loaded" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20250227082645.png" src="lib/media/pasted-image-20250227082645.png" style="width: 300px; max-width: 100%;"></span><br>
+可见对于没有访问至少 K 次的元素，其距离为正无穷，所以会被优先踢出。当存在多个这样的元素时，原论文指出可采用某种二级策略。<strong>本实验材料提示此时我们应踢出访问记录最早的元素，也就是采用 FIFO 而非 LRU</strong><br>
+在超过K次访问的元素中采用的是LRU提出</p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">​<strong>场景</strong>​</th>
+<th dir="ltr">​<strong>history list &amp; lru list策略</strong>​</th>
+<th dir="ltr">​<strong>k-distance 策略</strong>​</th>
+<th dir="ltr">​<strong>是否一致</strong>​</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">存在未达 K 次页面</td>
+<td dir="ltr">按 FIFO 淘汰最早进入的未达 K 次页面</td>
+<td dir="ltr">按 FIFO 淘汰最早进入的未达 K 次页面</td>
+<td dir="ltr">是</td>
+</tr>
+<tr>
+<td dir="ltr">所有页面均达 K 次</td>
+<td dir="ltr">按 LRU 淘汰最久未访问页面</td>
+<td dir="ltr">按 k-distance（等价 LRU）淘汰</td>
+<td dir="ltr">是</td>
+</tr>
+<tr>
+<td dir="ltr">混合场景（未达 + 已达）</td>
+<td dir="ltr">优先淘汰未达 K 次页面</td>
+<td dir="ltr">优先淘汰未达 K 次页面</td>
+<td dir="ltr">是</td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">所以根本没有去计算k-distance  没有去维护 timestamp</p></div><div class="el-p"><p dir="auto">整体示意图<br>
+<span alt="Project1 Task 1 LRUK2.png" src="Project1 Task 1 LRUK2.png" class="internal-embed media-embed image-embed is-loaded" style="width: 600px; max-width: 100%;"><img alt="Project1 Task 1 LRUK2.png" src="lib/media/project1-task-1-lruk2.png" style="width: 600px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">如果要插入或者 移除的话 就是这样  优先按FIFO排除page8<br>
+<span alt="Project1 Task1 LRUK2 2.png" src="Project1 Task1 LRUK2 2.png" class="internal-embed media-embed image-embed is-loaded" style="width: 600px; max-width: 100%;"><img alt="Project1 Task1 LRUK2 2.png" src="lib/media/project1-task1-lruk2-2.png" style="width: 600px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">greater k中的page如果再次访问<br>
+<span alt="Project1 Task1 LRUK2 3(1).png" src="Project1 Task1 LRUK2 3(1).png" class="internal-embed media-embed image-embed is-loaded" style="width: 600px; max-width: 100%;"><img alt="Project1 Task1 LRUK2 3(1).png" src="lib/media/project1-task1-lruk2-3(1).png" style="width: 600px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">ListNode的成员变量改为了：</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">class</span> <span class="token class-name">LRUKNode</span> <span class="token punctuation">{</span>  
+ <span class="token keyword">public</span><span class="token operator">:</span>  
+  <span class="token comment">/** History of last seen K timestamps of this page. Least recent timestamp stored in front. */</span>  
+  <span class="token comment">// Remove maybe_unused if you start using them. Feel free to change the member variables as you want.  </span>
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t hit_count_<span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>frame_id_t<span class="token operator">&gt;</span><span class="token double-colon punctuation">::</span>iterator pos_<span class="token punctuation">;</span>  
+  <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token keyword">bool</span> is_evictable_<span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto"><code>hit_count_</code> 记录访问次数  与k比较</li>
+<li data-line="1" dir="auto"><code>pos_</code> 位置记录了一个<code>iterator</code> --  C++文档中  <code>std::list</code> 的 <code>iterator</code> 不会因为其他元素的移动插入删除操作而失效 还能表示正确的位置</li>
+<li data-line="2" dir="auto"><code>is_evictable_</code>: 与之前一样</li>
+</ul></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">class</span> <span class="token class-name">LRUKReplacer</span> <span class="token punctuation">{</span>
+<span class="token keyword">private</span><span class="token operator">:</span>  
+ <span class="token comment">// TODO(student): implement me! You can replace these member variables as you like.  </span>
+ <span class="token comment">// Remove maybe_unused if you start using them.  </span>
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>frame_id_t<span class="token operator">&gt;</span> history_list_<span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>frame_id_t<span class="token operator">&gt;</span> lru_list_<span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>unordered_map<span class="token operator">&lt;</span>frame_id_t<span class="token punctuation">,</span> LRUKNode<span class="token operator">&gt;</span> entries_<span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t curr_size_<span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t replacer_size_<span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> size_t k_<span class="token punctuation">;</span>  
+ <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> std<span class="token double-colon punctuation">::</span>mutex latch_<span class="token punctuation">;</span>
+ <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto"><code>history_list_</code> 存储访问次数未超过k的节点</li>
+<li data-line="1" dir="auto"><code>lru_list_</code> 存储访问次数超过k的节点</li>
+<li data-line="2" dir="auto"><code>entries_</code>   跟以前一样  一个键值对 -- frame_id 与 LRUKNode对应</li>
+<li data-line="3" dir="auto"><code>curr_size_ </code>  <code>replacer_size_</code>   <code>k_  latch_</code> 跟以前都一样</li>
+</ul></div><div class="el-p"><p dir="auto"><strong>RecordAccess 函数</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">RecordAccess</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>maybe_unused<span class="token punctuation">]</span><span class="token punctuation">]</span> AccessType access_type<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token comment">// 上锁  </span>
+  std<span class="token double-colon punctuation">::</span>scoped_lock<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token comment">// 合法性 特殊情况判断  </span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>frame_id <span class="token operator">&gt;</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>replacer_size_<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">invalid_argument</span><span class="token punctuation">(</span><span class="token string">"Invalid frame_id"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  size_t new_count <span class="token operator">=</span> <span class="token operator">++</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>hit_count_<span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>new_count <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token comment">// 新插入  </span>
+    history_list_<span class="token punctuation">.</span><span class="token function">emplace_front</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_ <span class="token operator">=</span> history_list_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>  
+    <span class="token comment">/*if (new_count &gt; 1 &amp;&amp; new_count &lt; k_) {  
+      // 在history list中转移  
+      history_list_.erase(entries_[frame_id].pos_);      history_list_.emplace_front(frame_id);      entries_[frame_id].pos_ = history_list_.begin();    } else*/</span>    <span class="token keyword">if</span> <span class="token punctuation">(</span>new_count <span class="token operator">==</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token comment">// 转移  </span>
+      history_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+      lru_list_<span class="token punctuation">.</span><span class="token function">emplace_front</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+      entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_ <span class="token operator">=</span> lru_list_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>new_count <span class="token operator">&gt;</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token comment">// 在lru list中转移  </span>
+      lru_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+      lru_list_<span class="token punctuation">.</span><span class="token function">emplace_front</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+      entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_ <span class="token operator">=</span> lru_list_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">值得注意的是 在<code>history_list_</code>中采用的是FIFO 所以当<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mn class="mjx-n"><mjx-c class="mjx-c31"></mjx-c></mjx-mn><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3C"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3C"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi></mjx-math></mjx-container></span>时 不需要移动<br>
+其实在上面的方法中也是这样  当<span class="math math-inline is-loaded"><mjx-container class="MathJax" jax="CHTML"><mjx-math class="MJX-TEX"><mjx-mn class="mjx-n"><mjx-c class="mjx-c31"></mjx-c></mjx-mn><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3C"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D458 TEX-I"></mjx-c></mjx-mi><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3C"></mjx-c></mjx-mo><mjx-mi class="mjx-i" space="4"><mjx-c class="mjx-c1D45B TEX-I"></mjx-c></mjx-mi></mjx-math></mjx-container></span>的时候  k-distance始终是+inf   比较时间的时候看的是<code>history_.front()</code>  所以还是看的最早插入时间  --  所以我们维护链表的时候不需要移动<br>
+代码示意图<br>
+<span alt="Project1 Task1 LRUK2 4.png" src="Project1 Task1 LRUK2 4.png" class="internal-embed media-embed image-embed is-loaded" style="width: 400px; max-width: 100%;"><img alt="Project1 Task1 LRUK2 4.png" src="lib/media/project1-task1-lruk2-4.png" style="width: 400px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto"><strong>Evit函数</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">auto</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Evict</span><span class="token punctuation">(</span>frame_id_t <span class="token operator">*</span>frame_id<span class="token punctuation">)</span> <span class="token operator">-&gt;</span> <span class="token keyword">bool</span> <span class="token punctuation">{</span>  
+  <span class="token comment">// 上锁  </span>
+  std<span class="token double-colon punctuation">::</span>scoped_lock<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+  <span class="token keyword">bool</span> page_find <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>history_list_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token comment">// FIFO history list  </span>
+    <span class="token comment">// 淘汰 末尾 第一个 evictable 为 false的  </span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span> it <span class="token operator">=</span> history_list_<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> it <span class="token operator">!=</span> history_list_<span class="token punctuation">.</span><span class="token function">rend</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>it<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>entries_<span class="token punctuation">[</span><span class="token operator">*</span>it<span class="token punctuation">]</span><span class="token punctuation">.</span>is_evictable_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+        <span class="token operator">*</span>frame_id <span class="token operator">=</span> <span class="token operator">*</span>it<span class="token punctuation">;</span>  
+        history_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">next</span><span class="token punctuation">(</span>it<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">base</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+        page_find <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  
+        <span class="token keyword">break</span><span class="token punctuation">;</span>  
+      <span class="token punctuation">}</span>  
+    <span class="token punctuation">}</span>  
+  <span class="token punctuation">}</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>page_find <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>lru_list_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span> it <span class="token operator">=</span> lru_list_<span class="token punctuation">.</span><span class="token function">rbegin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> it <span class="token operator">!=</span> lru_list_<span class="token punctuation">.</span><span class="token function">rend</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>it<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>entries_<span class="token punctuation">[</span><span class="token operator">*</span>it<span class="token punctuation">]</span><span class="token punctuation">.</span>is_evictable_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+        <span class="token operator">*</span>frame_id <span class="token operator">=</span> <span class="token operator">*</span>it<span class="token punctuation">;</span>  
+        lru_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">next</span><span class="token punctuation">(</span>it<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">base</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+        page_find <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  
+        <span class="token keyword">break</span><span class="token punctuation">;</span>  
+      <span class="token punctuation">}</span>  
+    <span class="token punctuation">}</span>  
+  <span class="token punctuation">}</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>page_find<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    entries_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span><span class="token operator">*</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token operator">--</span>curr_size_<span class="token punctuation">;</span>  
+    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>Remove 函数</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Remove</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token comment">// 上锁  </span>
+  std<span class="token double-colon punctuation">::</span>scoped_lock<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token comment">// 合法性 特殊情况判断  </span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>frame_id <span class="token operator">&gt;</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>replacer_size_<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">invalid_argument</span><span class="token punctuation">(</span><span class="token string">"Invalid frame_id"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>entries_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">==</span> entries_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>is_evictable_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">logic_error</span><span class="token punctuation">(</span><span class="token string">"can't remove this frame"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>hit_count_ <span class="token operator">&lt;</span> k_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    history_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>  
+    lru_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>pos_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token operator">--</span>curr_size_<span class="token punctuation">;</span>  
+  entries_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><strong>SetEvictable 函数</strong></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">LRUKReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">SetEvictable</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">,</span> <span class="token keyword">bool</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token comment">// 上锁  </span>
+  std<span class="token double-colon punctuation">::</span>scoped_lock<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token comment">// 合法性 特殊情况判断  </span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>frame_id <span class="token operator">&gt;</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">(</span>replacer_size_<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">throw</span> std<span class="token double-colon punctuation">::</span><span class="token function">invalid_argument</span><span class="token punctuation">(</span><span class="token string">"Invalid frame_id"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>entries_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">==</span> entries_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">return</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  <span class="token keyword">bool</span> current_evictable <span class="token operator">=</span> entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>is_evictable_<span class="token punctuation">;</span>  
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>current_evictable <span class="token operator">&amp;&amp;</span> set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    curr_size_<span class="token operator">++</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>current_evictable <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>set_evictable<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    curr_size_<span class="token operator">--</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+  entries_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">.</span>is_evictable_ <span class="token operator">=</span> set_evictable<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">提交gradescope<br>
+<span alt="Pasted image 20250227151824.png" src="Pasted image 20250227151824.png" class="internal-embed media-embed image-embed is-loaded" style="width: 200px; max-width: 100%;"><img alt="Pasted image 20250227151824.png" src="lib/media/pasted-image-20250227151824.png" style="width: 200px; max-width: 100%;"></span></p></div><div class="el-p"><span style="display: block; margin-block-start: var(--p-spacing); margin-block-end: var(--p-spacing);">文件代码<br>
+<span alt="lru_k_replacer approach2 cpp.cpp" src="lru_k_replacer approach2 cpp.cpp" class="internal-embed file-embed mod-generic is-loaded"><div class="file-embed-title"><span class="file-embed-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></span> lru_k_replacer approach2 cpp.cpp</div></span><br>
+<span alt="lru_k_replacer approach2 c.h" src="lru_k_replacer approach2 c.h" class="internal-embed file-embed mod-generic is-loaded"><div class="file-embed-title"><span class="file-embed-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></span> lru_k_replacer approach2 c.h</div></span></span></div></div></div></div></div><div class="el-h3 heading-wrapper"><h3 data-heading="Task 2 - Disk Scheduler" dir="auto" class="heading" id="Task_2_-_Disk_Scheduler"><div class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>Task 2 - Disk Scheduler</h3><div class="heading-children"><div class="el-p"><p dir="auto">在Task2 首先要弄清楚的就是Disk Scheduler, DiskRequest, Channel, Disk manager 之间的关系<br>
+首先DiskRequest是一个载体  是存储的一些关于请求的信息   在源代码中是 一个 结构体</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token comment">/**  
+ * @brief Represents a Write or Read request for the DiskManager to execute. */</span><span class="token keyword">struct</span> <span class="token class-name">DiskRequest</span> <span class="token punctuation">{</span>  
+  <span class="token comment">/** Flag indicating whether the request is a write or a read. */</span>  
+  <span class="token keyword">bool</span> is_write_<span class="token punctuation">;</span>  
+  
+  <span class="token comment">/**  
+   *  Pointer to the start of the memory location where a page is either:   *   1. being read into from disk (on a read).   *   2. being written out to disk (on a write).   */</span>  <span class="token keyword">char</span> <span class="token operator">*</span>data_<span class="token punctuation">;</span>  
+  
+  <span class="token comment">/** ID of the page being read from / written to disk. */</span>  
+  page_id_t page_id_<span class="token punctuation">;</span>  
+  
+  <span class="token comment">/** Callback used to signal to the request issuer when the request has been completed. */</span>  
+  std<span class="token double-colon punctuation">::</span>promise<span class="token operator">&lt;</span><span class="token keyword">bool</span><span class="token operator">&gt;</span> callback_<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto"><code>is_write_</code> 用来区分写还是读<br>
+<code>data_</code>  是个char类型的指针 -- 指向内存中的一个位置  写入这个位置 或者读取这个位置<br>
+<code>page_id_</code> 页面id  标识正在从磁盘读取或写入磁盘的页面<br>
+<code>callback_</code>  这是一个<code>std::promise&lt;bool&gt;</code>类型的回调函数，用于在请求完成后向请求发起者发出信号。使用<code>std::promise</code>和其关联的<code>std::future</code>机制<br>
+后面会详细谈到<code>std::promise</code>和其关联的<code>std::future</code>机制</p></div><div class="el-p"><p dir="auto">Channel 其实就是一个封装好了的队列   请求FIFO<br>
+Disk Schedule是管理这个队列的    而 真正进行write 和 read操作的是由Disk Manager完成的<br>
+Disk Scheduler, Disk manager, Channel关系图<br>
+<span alt="Project1 Task2 1.png" src="Project1 Task2 1.png" class="internal-embed media-embed image-embed is-loaded" style="width: 150px; max-width: 100%;"><img alt="Project1 Task2 1.png" src="lib/media/project1-task2-1.png" style="width: 150px; max-width: 100%;"></span></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">class</span> <span class="token class-name">DiskScheduler</span> <span class="token punctuation">{</span>  
+ <span class="token keyword">public</span><span class="token operator">:</span>
+ <span class="token keyword">private</span><span class="token operator">:</span>  
+  <span class="token comment">/** Pointer to the disk manager. */</span>  
+  DiskManager <span class="token operator">*</span>disk_manager_ <span class="token function">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>__unused__<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token comment">/** A shared queue to concurrently schedule and process requests. When the DiskScheduler's destructor is called,  
+   * `std::nullopt` is put into the queue to signal to the background thread to stop execution. */</span>  Channel<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>optional<span class="token operator">&lt;</span>DiskRequest<span class="token operator">&gt;&gt;</span> request_queue_<span class="token punctuation">;</span>  
+  <span class="token comment">/** The background thread responsible for issuing scheduled requests to the disk manager. */</span>  
+  std<span class="token double-colon punctuation">::</span>optional<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>thread<span class="token operator">&gt;</span> background_thread_<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto"><strong>disk<em>manager</em></strong>: 这是一个指向<code>DiskManager</code>对象的指针，用于与磁盘管理器进行交互。注意，这里使用了<code>__attribute__((__unused__))</code>属性标记，这通常意味着在某些编译环境下这个变量可能不会被用到，但在当前上下文中它是为了保持灵活性和扩展性而定义的。</li>
+<li data-line="1" dir="auto"><strong>request<em>queue</em></strong>: 这是一个共享队列，类型为<code>Channel&lt;std::optional&lt;DiskRequest&gt;&gt;</code>。此队列用于并发地调度和处理请求。<code>Channel</code>在这里作为一种线程安全的方式，允许不同线程之间安全地传递数据。当<code>DiskScheduler</code>的析构函数被调用时，会向队列中放入一个<code>std::nullopt</code>值，以此通知后台线程停止执行。<code>std::optional&lt;DiskRequest&gt;</code>的使用允许队列中的元素可以是有效的<code>DiskRequest</code>或者为空（如信号停止）。</li>
+<li data-line="2" dir="auto"><strong>background<em>thread</em></strong>: 这是一个可选的标准库线程对象（<code>std::optional&lt;std::thread&gt;</code>），代表负责将计划好的请求发送给磁盘管理器的后台线程。使用<code>std::optional</code>允许该成员在某些情况下不存在（例如，在<code>DiskScheduler</code>实例化但未启动后台线程时）。这种设计提供了更大的灵活性，使得<code>DiskScheduler</code>可以根据需要启动或不启动后台线程。</li>
+</ul></div><div class="el-p"><p dir="auto">除此之外 还得多少看一下Channel和disk manager的函数</p></div><div class="el-p"><p dir="auto">在代码中  用到了一个<code>std::promise</code>和<code>std::future</code>机制<br>
+<span alt="Project1 Task2 2.png" src="Project1 Task2 2.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Project1 Task2 2.png" src="lib/media/project1-task2-2.png" style="width: 500px; max-width: 100%;"></span></p></div><div class="el-p"><p dir="auto">&nbsp;<strong>为什么需要它们？</strong><br>
+假设没有&nbsp;<code>future</code>&nbsp;和&nbsp;<code>promise</code>，在多线程场景中：</p></div><div class="el-ul"><ul>
+<li data-line="0" dir="auto">​<strong>问题1</strong>：线程 A 如何获取线程 B 的计算结果？<br>
+（比如用户线程如何知道磁盘 I/O 何时完成？）</li>
+<li data-line="2" dir="auto">​<strong>问题2</strong>：线程 B 抛出异常时，线程 A 如何捕获？<br>
+（比如磁盘写入失败时如何通知调用方？）</li>
+<li data-line="4" dir="auto">​<strong>问题3</strong>：如何避免轮询检查结果造成的 CPU 浪费？<br>
+（需要一种高效的等待机制）<br>
+<code>future</code>&nbsp;和&nbsp;<code>promise</code>&nbsp;通过以下方式解决这些问题：</li>
+<li data-line="7" dir="auto">​<strong>自动同步</strong>：<code>future.get()</code>&nbsp;会阻塞线程，直到结果可用。</li>
+<li data-line="8" dir="auto">​<strong>异常传播</strong>：如果&nbsp;<code>promise</code>&nbsp;设置异常，<code>future</code>&nbsp;会抛出该异常。</li>
+<li data-line="9" dir="auto">​<strong>无需轮询</strong>：通过条件变量实现高效等待。<br>
+以一个DiskScheduler的例子<br>
+用户线程提交请求</li>
+</ul></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token comment">// 用户线程（例如 BufferPoolManager）</span>
+std<span class="token double-colon punctuation">::</span>promise<span class="token operator">&lt;</span><span class="token keyword">bool</span><span class="token operator">&gt;</span> prom<span class="token punctuation">;</span>          <span class="token comment">// 创建 promise</span>
+<span class="token keyword">auto</span> future <span class="token operator">=</span> prom<span class="token punctuation">.</span><span class="token function">get_future</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment">// 获取关联的 future</span>
+
+<span class="token comment">// 构造磁盘请求（写页）</span>
+DiskRequest req<span class="token punctuation">{</span>
+    <span class="token punctuation">.</span>is_write_ <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token punctuation">.</span>page_id_ <span class="token operator">=</span> <span class="token number">42</span><span class="token punctuation">,</span>
+    <span class="token punctuation">.</span>data_ <span class="token operator">=</span> buffer<span class="token punctuation">,</span>
+    <span class="token punctuation">.</span>callback_ <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">move</span><span class="token punctuation">(</span>prom<span class="token punctuation">)</span>   <span class="token comment">// 将 promise 移入请求</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 提交请求到调度器</span>
+disk_scheduler<span class="token punctuation">.</span><span class="token function">Schedule</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">move</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 阻塞等待操作完成（通过 future）</span>
+future<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+<span class="token keyword">if</span> <span class="token punctuation">(</span>future<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">"写入成功！"</span><span class="token punctuation">;</span> 
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">后台处理</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token comment">// DiskScheduler 的后台线程</span>
+<span class="token keyword">void</span> <span class="token class-name">DiskScheduler</span><span class="token double-colon punctuation">::</span><span class="token function">StartWorkerThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">auto</span> req <span class="token operator">=</span> request_queue_<span class="token punctuation">.</span><span class="token function">Pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 从队列取出请求</span>
+        
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token comment">// 执行磁盘操作（例如写页）</span>
+            disk_manager_<span class="token operator">-&gt;</span><span class="token function">WritePage</span><span class="token punctuation">(</span>req<span class="token operator">-&gt;</span>page_id_<span class="token punctuation">,</span> req<span class="token operator">-&gt;</span>data_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            
+            <span class="token comment">// 设置操作结果为成功</span>
+            req<span class="token operator">-&gt;</span>callback_<span class="token punctuation">.</span><span class="token function">set_value</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">// 捕获异常并传递到 future</span>
+            req<span class="token operator">-&gt;</span>callback_<span class="token punctuation">.</span><span class="token function">set_exception</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">current_exception</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">而我们写的其实就是后台处理 的一部分</p></div><div class="el-p"><p dir="auto">测试代码中</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">auto</span> promise1 <span class="token operator">=</span> disk_scheduler<span class="token operator">-&gt;</span><span class="token function">CreatePromise</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 写操作的 Promise</span>
+<span class="token keyword">auto</span> future1 <span class="token operator">=</span> promise1<span class="token punctuation">.</span><span class="token function">get_future</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>              <span class="token comment">// 关联的 Future</span>
+
+<span class="token keyword">auto</span> promise2 <span class="token operator">=</span> disk_scheduler<span class="token operator">-&gt;</span><span class="token function">CreatePromise</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 读操作的 Promise</span>
+<span class="token keyword">auto</span> future2 <span class="token operator">=</span> promise2<span class="token punctuation">.</span><span class="token function">get_future</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>            <span class="token comment">// 关联的 Future</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">promise其实好像是跟着构造函数创建出来的<br>
+有了promise就能通过<code>get_future()</code>创建这个promise关联的future</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token function">ASSERT_TRUE</span><span class="token punctuation">(</span>future1<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">future.get() 就是在阻塞等在结果</p></div><div class="el-p"><p dir="auto">代码很简单<br>
+<strong>Schedule函数</strong><br>
+<span alt="Pasted image 20250302093201.png" src="Pasted image 20250302093201.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20250302093201.png" src="lib/media/pasted-image-20250302093201.png" style="width: 500px; max-width: 100%;"></span><br>
+要求 调度一个请求供DiskManager执行 --  什么算是调度请求呢？<br>
+放入queue中就可以</p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">DiskScheduler</span><span class="token double-colon punctuation">::</span><span class="token function">Schedule</span><span class="token punctuation">(</span>DiskRequest r<span class="token punctuation">)</span> <span class="token punctuation">{</span> request_queue_<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">make_optional</span><span class="token punctuation">(</span>std<span class="token double-colon punctuation">::</span><span class="token function">move</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">因为Get Put都用了<code>std::move</code>  所以我也用了<code>std::move</code><br>
+<span alt="Pasted image 20250302093529.png" src="Pasted image 20250302093529.png" class="internal-embed media-embed image-embed is-loaded"><img alt="Pasted image 20250302093529.png" src="lib/media/pasted-image-20250302093529.png"></span><br>
+<code>std::move</code> 是 C++11 引入的一个标准库工具，它用于将对象的状态（资源）“转移”给另一个对象，而不需要进行深层的复制。这通过将对象转换为右值引用实现，从而允许资源以较低的开销从一个对象转移到另一个对象。需要注意的是，<code>std::move</code> 并不会移动任何东西，它只是一个强制转换操作，它告诉编译器可以将该对象当作一个右值来处理，进而可能应用移动语义或启用资源转移<br>
+移动语义是 C++11 的一项特性，旨在减少不必要的拷贝操作，特别是对于那些拥有动态分配内存或其他稀缺资源的对象。通过移动构造函数和移动赋值运算符，程序可以在某些情况下避免深拷贝，直接转移资源的所有权，从而提高性能。</p></div><div class="el-p"><p dir="auto"><strong>StartWorkerThread函数</strong><br>
+<span alt="Pasted image 20250302093731.png" src="Pasted image 20250302093731.png" class="internal-embed media-embed image-embed is-loaded" style="width: 700px; max-width: 100%;"><img alt="Pasted image 20250302093731.png" src="lib/media/pasted-image-20250302093731.png" style="width: 700px; max-width: 100%;"></span><br>
+线程在哪？  在队列中放着  -- 不停从队列中取出请求<br>
+执行请求是Disk Manager的事儿 -- 调用相关函数和方法就行了<br>
+什么时候结束？  --  当调用析构函数的时候<br>
+<span alt="Pasted image 20250302093959.png" src="Pasted image 20250302093959.png" class="internal-embed media-embed image-embed is-loaded" style="width: 500px; max-width: 100%;"><img alt="Pasted image 20250302093959.png" src="lib/media/pasted-image-20250302093959.png" style="width: 500px; max-width: 100%;"></span><br>
+所以我们的判断条件就是遇到<code>nullopt</code></p></div><div class="el-pre"><pre class="language-cpp" tabindex="0"><code data-line="0" class="language-cpp is-loaded"><span class="token keyword">void</span> <span class="token class-name">DiskScheduler</span><span class="token double-colon punctuation">::</span><span class="token function">StartWorkerThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+    <span class="token keyword">auto</span> request_opt <span class="token operator">=</span> request_queue_<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>request_opt<span class="token punctuation">.</span><span class="token function">has_value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      <span class="token keyword">break</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span>  
+    DiskRequest req <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">move</span><span class="token punctuation">(</span>request_opt<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>req<span class="token punctuation">.</span>is_write_<span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+      disk_manager_<span class="token operator">-&gt;</span><span class="token function">WritePage</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>page_id_<span class="token punctuation">,</span> req<span class="token punctuation">.</span>data_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>  
+      disk_manager_<span class="token operator">-&gt;</span><span class="token function">ReadPage</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>page_id_<span class="token punctuation">,</span> req<span class="token punctuation">.</span>data_<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+    <span class="token punctuation">}</span>  
+    req<span class="token punctuation">.</span>callback_<span class="token punctuation">.</span><span class="token function">set_value</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">提交gradescope  通过了有关DiskSchduler的内容<br>
+<span alt="Pasted image 20250302094201.png" src="Pasted image 20250302094201.png" class="internal-embed media-embed image-embed is-loaded" style="width: 200px; max-width: 100%;"><img alt="Pasted image 20250302094201.png" src="lib/media/pasted-image-20250302094201.png" style="width: 200px; max-width: 100%;"></span></p></div><div class="mod-footer mod-ui"></div></div></div></div></div></div><div class="sidebar-right sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content"><div class="graph-view-wrapper"><div class="sidebar-section-header">Interactive Graph</div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div></div><script defer="">let rs = document.querySelector(".sidebar-right"); rs.classList.add("is-collapsed"); if (window.innerWidth > 768) rs.classList.remove("is-collapsed"); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></body></html>
